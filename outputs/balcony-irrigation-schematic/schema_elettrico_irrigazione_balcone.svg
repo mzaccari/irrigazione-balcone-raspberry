@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1250" viewBox="0 0 1800 1250">
+  <defs>
+    <style>
+      .title { font: 700 34px Arial, sans-serif; fill: #12312c; }
+      .subtitle { font: 400 18px Arial, sans-serif; fill: #35534d; }
+      .section { font: 700 22px Arial, sans-serif; fill: #ffffff; }
+      .label { font: 700 16px Arial, sans-serif; fill: #17352f; }
+      .small { font: 400 14px Arial, sans-serif; fill: #17352f; }
+      .tiny { font: 400 12px Arial, sans-serif; fill: #17352f; }
+      .warn { font: 700 14px Arial, sans-serif; fill: #8a2a00; }
+      .frame { fill: #ffffff; stroke: #d7e2df; stroke-width: 2; }
+      .logicBox { fill: #f7fbfa; stroke: #2d6a5f; stroke-width: 3; rx: 14; }
+      .logicHeader { fill: #2d6a5f; rx: 12; }
+      .powerBox { fill: #fff9f1; stroke: #b56b1f; stroke-width: 3; rx: 14; }
+      .powerHeader { fill: #b56b1f; rx: 12; }
+      .component { fill: #f0f7f5; stroke: #2d6a5f; stroke-width: 2; rx: 8; }
+      .powerComponent { fill: #fffdf8; stroke: #b56b1f; stroke-width: 2; rx: 8; }
+      .sensorComponent { fill: #f4fbf1; stroke: #4a8a36; stroke-width: 2; rx: 8; }
+      .neutralComponent { fill: #ffffff; stroke: #7b8b87; stroke-width: 2; rx: 8; }
+      .pos { stroke: #c62828; stroke-width: 4; fill: none; marker-end: url(#arrowRed); }
+      .neg { stroke: #202020; stroke-width: 4; fill: none; marker-end: url(#arrowBlack); }
+      .gndRef { stroke: #202020; stroke-width: 3; stroke-dasharray: 8 8; fill: none; marker-end: url(#arrowBlack); }
+      .signal { stroke: #1565c0; stroke-width: 3; fill: none; marker-end: url(#arrowBlue); }
+      .i2c { stroke: #2e7d32; stroke-width: 3; fill: none; marker-end: url(#arrowGreen); }
+      .fivev { stroke: #f57c00; stroke-width: 4; fill: none; marker-end: url(#arrowOrange); }
+      .busText { font: 700 14px Arial, sans-serif; fill: #ffffff; }
+    </style>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c62828"/>
+    </marker>
+    <marker id="arrowBlack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#202020"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1565c0"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e7d32"/>
+    </marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f57c00"/>
+    </marker>
+  </defs>
+
+  <rect width="1800" height="1250" fill="#ffffff"/>
+  <rect x="30" y="20" width="1740" height="1190" class="frame"/>
+
+  <text x="60" y="62" class="title">Irrigazione balcone - schema elettrico core</text>
+  <text x="60" y="92" class="subtitle">Raspberry Pi Zero 2 W con morsettiera GPIO: solo segnali. Potenza pompe separata in box potenza.</text>
+
+  <rect x="1225" y="35" width="485" height="125" class="neutralComponent"/>
+  <text x="1245" y="62" class="label">Legenda linee</text>
+  <line x1="1245" y1="85" x2="1335" y2="85" class="pos"/>
+  <text x="1350" y="90" class="small">+12V potenza</text>
+  <line x1="1245" y1="112" x2="1335" y2="112" class="neg"/>
+  <text x="1350" y="117" class="small">GND / ritorno potenza</text>
+  <line x1="1245" y1="139" x2="1335" y2="139" class="signal"/>
+  <text x="1350" y="144" class="small">GPIO segnale 3.3V</text>
+  <line x1="1500" y1="85" x2="1585" y2="85" class="i2c"/>
+  <text x="1600" y="90" class="small">I2C / sensori</text>
+  <line x1="1500" y1="112" x2="1585" y2="112" class="fivev"/>
+  <text x="1600" y="117" class="small">5V Raspberry</text>
+  <line x1="1500" y1="139" x2="1585" y2="139" class="gndRef"/>
+  <text x="1600" y="144" class="small">GND comune</text>
+
+  <!-- Solar and battery -->
+  <rect x="60" y="150" width="580" height="330" class="logicBox"/>
+  <rect x="60" y="150" width="580" height="45" class="logicHeader"/>
+  <text x="84" y="180" class="section">Alimentazione solare / batteria</text>
+
+  <rect x="105" y="230" width="170" height="72" class="component"/>
+  <text x="136" y="259" class="label">Pannello</text>
+  <text x="137" y="282" class="small">50-100W</text>
+
+  <rect x="365" y="230" width="190" height="72" class="component"/>
+  <text x="413" y="259" class="label">MPPT</text>
+  <text x="402" y="282" class="small">Victron 75/10 BT</text>
+
+  <rect x="225" y="365" width="240" height="78" class="component"/>
+  <text x="270" y="395" class="label">Batteria LiFePO4</text>
+  <text x="266" y="418" class="small">12.8V 20-30Ah, BMS</text>
+
+  <path d="M275 266 H365" class="pos"/>
+  <path d="M460 302 V365" class="pos"/>
+  <path d="M345 365 V322 H365" class="neg"/>
+  <text x="470" y="338" class="tiny">fusibile 15A tra MPPT e batteria</text>
+
+  <!-- Power box -->
+  <rect x="780" y="185" width="940" height="785" class="powerBox"/>
+  <rect x="780" y="185" width="940" height="45" class="powerHeader"/>
+  <text x="805" y="215" class="section">BOX POTENZA 12V - fusibili, MOSFET, pompe</text>
+
+  <rect x="835" y="280" width="170" height="70" class="powerComponent"/>
+  <text x="879" y="309" class="label">Fusibile</text>
+  <text x="865" y="332" class="small">principale 10-15A</text>
+
+  <rect x="1065" y="280" width="170" height="70" class="powerComponent"/>
+  <text x="1105" y="309" class="label">Sezionatore</text>
+  <text x="1128" y="332" class="small">12V DC</text>
+
+  <rect x="1295" y="280" width="205" height="70" class="powerComponent"/>
+  <text x="1354" y="309" class="label">Bus +12V</text>
+  <text x="1330" y="332" class="small">distribuzione positiva</text>
+
+  <rect x="1295" y="400" width="205" height="52" fill="#202020" rx="8"/>
+  <text x="1344" y="431" class="busText">Bus GND comune</text>
+
+  <path d="M465 405 C615 405, 690 315, 835 315" class="pos"/>
+  <path d="M1005 315 H1065" class="pos"/>
+  <path d="M1235 315 H1295" class="pos"/>
+  <path d="M465 430 C620 485, 1000 426, 1295 426" class="neg"/>
+
+  <rect x="835" y="400" width="210" height="70" class="powerComponent"/>
+  <text x="883" y="429" class="label">Buck 12V-&gt;5V</text>
+  <text x="876" y="452" class="small">3A, fusibile 2A, per Raspberry</text>
+  <path d="M1398 350 V372 H940 V400" class="pos"/>
+  <path d="M940 470 V505 H850 V780 H690" class="fivev"/>
+  <path d="M1045 435 H1295" class="neg"/>
+
+  <!-- Pump rows -->
+  <rect x="835" y="555" width="135" height="62" class="powerComponent"/>
+  <text x="874" y="581" class="label">Fus 3A</text>
+  <text x="875" y="604" class="tiny">ramo pompa 1</text>
+  <rect x="1080" y="545" width="160" height="82" class="powerComponent"/>
+  <text x="1128" y="578" class="label">Pompa 1</text>
+  <text x="1119" y="604" class="small">acqua alta</text>
+  <rect x="1350" y="545" width="175" height="82" class="powerComponent"/>
+  <text x="1394" y="578" class="label">MOSFET 1</text>
+  <text x="1380" y="604" class="tiny">signal GPIO17</text>
+
+  <rect x="835" y="685" width="135" height="62" class="powerComponent"/>
+  <text x="874" y="711" class="label">Fus 3A</text>
+  <text x="875" y="734" class="tiny">ramo pompa 2</text>
+  <rect x="1080" y="675" width="160" height="82" class="powerComponent"/>
+  <text x="1128" y="708" class="label">Pompa 2</text>
+  <text x="1138" y="734" class="small">media</text>
+  <rect x="1350" y="675" width="175" height="82" class="powerComponent"/>
+  <text x="1394" y="708" class="label">MOSFET 2</text>
+  <text x="1380" y="734" class="tiny">signal GPIO27</text>
+
+  <rect x="835" y="815" width="135" height="62" class="powerComponent"/>
+  <text x="874" y="841" class="label">Fus 3A</text>
+  <text x="875" y="864" class="tiny">ramo pompa 3</text>
+  <rect x="1080" y="805" width="160" height="82" class="powerComponent"/>
+  <text x="1128" y="838" class="label">Pompa 3</text>
+  <text x="1140" y="864" class="small">secca</text>
+  <rect x="1350" y="805" width="175" height="82" class="powerComponent"/>
+  <text x="1394" y="838" class="label">MOSFET 3</text>
+  <text x="1380" y="864" class="tiny">signal GPIO22</text>
+
+  <!-- Power routing pump rows -->
+  <path d="M1398 350 V515 H902 V555" class="pos"/>
+  <path d="M970 586 H1080" class="pos"/>
+  <path d="M1240 586 H1350" class="neg"/>
+  <path d="M1525 586 H1580 V426 H1500" class="neg"/>
+
+  <path d="M1433 350 V645 H902 V685" class="pos"/>
+  <path d="M970 716 H1080" class="pos"/>
+  <path d="M1240 716 H1350" class="neg"/>
+  <path d="M1525 716 H1605 V426 H1500" class="neg"/>
+
+  <path d="M1468 350 V775 H902 V815" class="pos"/>
+  <path d="M970 846 H1080" class="pos"/>
+  <path d="M1240 846 H1350" class="neg"/>
+  <path d="M1525 846 H1630 V426 H1500" class="neg"/>
+
+  <!-- Logic box -->
+  <rect x="60" y="555" width="620" height="435" class="logicBox"/>
+  <rect x="60" y="555" width="620" height="45" class="logicHeader"/>
+  <text x="84" y="585" class="section">BOX LOGICA IP65 - solo segnali + 5V</text>
+
+  <rect x="100" y="650" width="205" height="100" class="component"/>
+  <text x="133" y="682" class="label">Raspberry Pi</text>
+  <text x="151" y="706" class="small">Zero 2 W</text>
+  <text x="125" y="732" class="tiny">alimentato via 5V USB</text>
+
+  <rect x="375" y="640" width="245" height="125" class="component"/>
+  <text x="416" y="672" class="label">Morsettiera GPIO</text>
+  <text x="412" y="696" class="small">GeeekPi 40 pin screw terminal</text>
+  <text x="400" y="724" class="tiny">GPIO17 P1, GPIO27 P2, GPIO22 P3</text>
+  <text x="400" y="746" class="tiny">GPIO23 livello, SDA/SCL, GND</text>
+
+  <rect x="100" y="820" width="205" height="92" class="component"/>
+  <text x="135" y="852" class="label">Ingresso 5V</text>
+  <text x="129" y="876" class="small">da buck 12V -&gt; 5V</text>
+  <text x="128" y="900" class="tiny">ramo protetto da fusibile 2A</text>
+
+  <rect x="375" y="825" width="210" height="87" class="sensorComponent"/>
+  <text x="420" y="858" class="label">ADS1115</text>
+  <text x="404" y="882" class="small">ADC I2C sensori umidita</text>
+
+  <path d="M305 700 H375" class="signal"/>
+  <path d="M305 866 H375" class="fivev"/>
+  <path d="M498 765 V825" class="i2c"/>
+
+  <!-- Inter-box cable -->
+  <rect x="690" y="615" width="150" height="195" class="neutralComponent"/>
+  <text x="718" y="643" class="label">Cavo tra box</text>
+  <text x="710" y="675" class="tiny">1 - GPIO17 Pompa 1</text>
+  <text x="710" y="699" class="tiny">2 - GPIO27 Pompa 2</text>
+  <text x="710" y="723" class="tiny">3 - GPIO22 Pompa 3</text>
+  <text x="710" y="747" class="tiny">4 - GND segnale</text>
+  <text x="710" y="771" class="tiny">5 - scorta / feedback</text>
+  <text x="710" y="795" class="tiny">6 - scorta</text>
+
+  <!-- Signal routing, horizontal lanes -->
+  <path d="M620 680 H690" class="signal"/>
+  <path d="M840 680 H850 V930 H1665 V586 H1525" class="signal"/>
+  <path d="M620 705 H690" class="signal"/>
+  <path d="M840 705 H860 V945 H1685 V716 H1525" class="signal"/>
+  <path d="M620 730 H690" class="signal"/>
+  <path d="M840 730 H870 V960 H1705 V846 H1525" class="signal"/>
+  <path d="M620 755 H690" class="gndRef"/>
+  <path d="M840 755 H850 V500 H1295" class="gndRef"/>
+  <text x="900" y="490" class="warn">GND comune obbligatorio: riferimento segnali, non ritorno corrente pompe</text>
+
+  <!-- Sensors, placed below the signal lanes -->
+  <rect x="720" y="1010" width="310" height="82" class="sensorComponent"/>
+  <text x="763" y="1042" class="label">Sensore livello serbatoio</text>
+  <text x="760" y="1068" class="small">GPIO23 + GND, pull-up interno</text>
+  <path d="M620 746 V1050 H720" class="signal"/>
+
+  <rect x="1070" y="1010" width="310" height="82" class="sensorComponent"/>
+  <text x="1122" y="1042" class="label">Sensori umidita</text>
+  <text x="1100" y="1068" class="small">Zona 1 / Zona 2 / Zona 3 su ADS1115</text>
+  <path d="M585 870 H1070" class="i2c"/>
+
+  <!-- Notes -->
+  <rect x="60" y="1120" width="1660" height="70" fill="#fff7ed" stroke="#b56b1f" stroke-width="2" rx="10"/>
+  <text x="85" y="1148" class="warn">Note operative</text>
+  <text x="230" y="1148" class="small">1. Mai collegare pompe o +12V ai pin GPIO del Raspberry: i GPIO comandano solo SIGNAL dei MOSFET.</text>
+  <text x="230" y="1172" class="small">2. Potenza nel box potenza; nel box logica solo 5V, segnali e sensori. Fusibili vicino alla batteria e su ogni ramo pompa.</text>
+</svg>
