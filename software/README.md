@@ -10,7 +10,9 @@ Primo controllo manuale per le tre pompe dell'irrigazione balcone.
 | Pompa 2 | 27 | 13 | Zona media |
 | Pompa 3 | 22 | 15 | Zona secca |
 
-Il comando dei MOSFET e attivo alto: GPIO alto = pompa accesa.
+Il comando del modulo relè e attivo basso: GPIO basso = relè chiuso = pompa accesa. `pumps.json` ha `active_high: false` per tutte e tre le pompe; `gpiozero` applica l'inversione (`OutputDevice(active_high=False, initial_value=False)`), quindi `on()`/`off()` restano invariati nel codice e nell'app.
+
+Cablaggio scheda relè (8 canali, 3 usati): bus 12V+ -> COM -> NO -> pompa+, pompa- diretta al bus GND, diodo 1N5819 in antiparallelo su ogni pompa. Sul lato segnale: togli il jumper VCC-JD-VCC, VCC (opto) al 3.3V del Pi, JD-VCC (bobine) al 5V del Pi, GND comune, IN1/IN2/IN3 su GPIO17/27/22.
 
 ## Installazione sul Raspberry
 
@@ -49,6 +51,7 @@ hostname -I
 
 ## Prima sequenza di test
 
+0. Verifica il cablaggio scheda relè a Pi spento: jumper VCC-JD-VCC rimosso, VCC su 3.3V, JD-VCC su 5V, IN1/2/3 su GPIO17/27/22. Poi accendi il Pi e controlla che tutti e tre i relè restino aperti (led IN spenti): e lo stato sicuro atteso all'avvio.
 1. Avvia l'interfaccia in simulazione e verifica che i pulsanti cambino stato.
 2. Avvia in modalita GPIO reale con i serbatoi pieni o le pompe pronte a girare a secco solo per tempi brevissimi.
 3. Usa prima `Impulso` a 0.5-1 secondo su una pompa alla volta.

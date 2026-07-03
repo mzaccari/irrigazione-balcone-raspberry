@@ -12,7 +12,9 @@ const items = [
   ["Controllo", "Alta", 1, "MicroSD high endurance", "SanDisk High Endurance 32/64 GB", "Amazon, MediaWorld, Unieuro", "Da acquistare", "", 10, "", "Meglio endurance per uso sempre acceso"],
   ["Alimentazione", "Alta", 1, "Convertitore 12V -> 5V", "Buck converter 12V a 5V USB, almeno 3A", "Amazon, negozi elettronica", "Da acquistare", "", 10, "", "Alimenta il Raspberry dalla batteria 12V"],
   ["Pompe", "Alta", 3, "Pompa sommersa 12V", "Pompa 12V DC circa 600 L/h, prevalenza circa 5 m", "Leroy Merlin, ManoMano, Amazon", "Da acquistare", "", 12, "", "Una per zona; verificare corrente assorbita"],
-  ["Elettronica", "Alta", 3, "Driver MOSFET con morsetti", "Adafruit MOSFET Driver 5648 o modulo equivalente 3.3V con morsetti", "Robot Italy, Adafruit, DigiKey", "Da acquistare", "", 8, "", "Preferibile al rele; zero saldature se con morsetti"],
+  ["Elettronica", "Alta", 1, "Modulo rele 8 canali 5V optoisolato", "Elegoo 8-Channel, optoisolato, 10A 250VAC/30VDC, jumper VCC/JD-VCC removibile", "Amazon (Elegoo)", "Da acquistare", "", 10, "", "Sostituisce i driver MOSFET (calo di tensione sui cavetti JST sotto carico): usa 3 canali su 8, margine per espansioni"],
+  ["Protezione", "Alta", 5, "Diodo di ricircolo", "1N5819 Schottky (o 1N4007)", "Amazon, negozi elettronica", "Da acquistare", "", 1, "", "Uno in antiparallelo su ogni pompa, catodo al +: assorbe lo spike induttivo quando il rele apre"],
+  ["Cablaggio", "Alta", 1, "Jumper Dupont femmina-femmina", "Kit 40 pin F-F, 10-20 cm", "Amazon", "Da acquistare", "", 5, "", "IN1/IN2/IN3, VCC, JD-VCC, GND della scheda rele verso i pin header del Raspberry"],
   ["Alimentazione", "Alta", 1, "Batteria LiFePO4 12V", "12.8V 20Ah con BMS integrato", "Amazon: ECO-WORTHY, Renogy, Redodo, Kepworth", "Da acquistare", "", 75, "", "20Ah consigliati per margine"],
   ["Solare", "Alta", 1, "Regolatore solare MPPT", "Victron SmartSolar MPPT 75/10 compatibile LiFePO4", "Moory, Toosolar, Amazon", "Da acquistare", "", 70, "", "Piu affidabile dei PWM economici"],
   ["Solare", "Alta", 1, "Pannello solare", "Pannello 12V 50W minimo, 100W consigliato", "FuturaNet, Amazon, Leroy Merlin", "Da acquistare", "", 65, "", "100W se vuoi piu autonomia in giorni nuvolosi"],
@@ -160,15 +162,16 @@ blueprint.getRange("A1").format = {
   font: { bold: true, color: "#FFFFFF", size: 16 },
   horizontalAlignment: "center",
 };
-blueprint.getRange("A3:D7").values = [
+blueprint.getRange("A3:D8").values = [
   ["GPIO", "Pin fisico", "Funzione", "Nota"],
-  ["GPIO17", "11", "Pompa 1", "Zona acqua alta: basilico, menta"],
-  ["GPIO27", "13", "Pompa 2", "Zona media: lauro/alloro, ornamentali"],
-  ["GPIO22", "15", "Pompa 3", "Zona secca: rosmarino, oleandro"],
+  ["GPIO17", "11", "Pompa 1 - IN1 rele", "Zona acqua alta: basilico, menta"],
+  ["GPIO27", "13", "Pompa 2 - IN2 rele", "Zona media: lauro/alloro, ornamentali"],
+  ["GPIO22", "15", "Pompa 3 - IN3 rele", "Zona secca: rosmarino, oleandro"],
   ["GPIO23", "16", "Sensore livello acqua", "Blocca pompe se serbatoio vuoto"],
+  ["-", "-", "Logica rele", "Active-low: GPIO basso = rele chiuso = pompa ON. VCC opto da 3.3V Pi, JD-VCC da 5V Pi, jumper rimosso"],
 ];
 blueprint.getRange("A3:D3").format = { fill: "#2D6A5F", font: { bold: true, color: "#FFFFFF" } };
-blueprint.getRange("A4:D7").format = { wrapText: true };
+blueprint.getRange("A4:D8").format = { wrapText: true };
 
 blueprint.getRange("F3:H8").values = [
   ["Linea", "Catena idraulica", "Regola"],

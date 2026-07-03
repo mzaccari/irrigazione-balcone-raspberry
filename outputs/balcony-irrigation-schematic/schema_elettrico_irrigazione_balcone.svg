@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1250" viewBox="0 0 1800 1250">
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1270" viewBox="0 0 1800 1270">
   <defs>
     <style>
       .title { font: 700 34px Arial, sans-serif; fill: #12312c; }
@@ -43,8 +43,8 @@
     </marker>
   </defs>
 
-  <rect width="1800" height="1250" fill="#ffffff"/>
-  <rect x="30" y="20" width="1740" height="1190" class="frame"/>
+  <rect width="1800" height="1270" fill="#ffffff"/>
+  <rect x="30" y="20" width="1740" height="1210" class="frame"/>
 
   <text x="60" y="62" class="title">Irrigazione balcone - schema elettrico core</text>
   <text x="60" y="92" class="subtitle">Raspberry Pi Zero 2 W con morsettiera GPIO: solo segnali. Potenza pompe separata in box potenza.</text>
@@ -89,7 +89,7 @@
   <!-- Power box -->
   <rect x="780" y="185" width="940" height="785" class="powerBox"/>
   <rect x="780" y="185" width="940" height="45" class="powerHeader"/>
-  <text x="805" y="215" class="section">BOX POTENZA 12V - fusibili, MOSFET, pompe</text>
+  <text x="805" y="215" class="section">BOX POTENZA 12V - fusibili, rele, pompe</text>
 
   <rect x="835" y="280" width="170" height="70" class="powerComponent"/>
   <text x="879" y="309" class="label">Fusibile</text>
@@ -118,7 +118,7 @@
   <path d="M940 470 V505 H850 V780 H690" class="fivev"/>
   <path d="M1045 435 H1295" class="neg"/>
 
-  <!-- Pump rows -->
+  <!-- Pump rows: bus+12V -> fuse -> rele (COM/NO) -> pompa+ ; pompa- -> GND bus diretto -->
   <rect x="835" y="555" width="135" height="62" class="powerComponent"/>
   <text x="874" y="581" class="label">Fus 3A</text>
   <text x="875" y="604" class="tiny">ramo pompa 1</text>
@@ -126,8 +126,8 @@
   <text x="1128" y="578" class="label">Pompa 1</text>
   <text x="1119" y="604" class="small">acqua alta</text>
   <rect x="1350" y="545" width="175" height="82" class="powerComponent"/>
-  <text x="1394" y="578" class="label">MOSFET 1</text>
-  <text x="1380" y="604" class="tiny">signal GPIO17</text>
+  <text x="1394" y="578" class="label">Rele 1</text>
+  <text x="1372" y="604" class="tiny">GPIO17, active-low</text>
 
   <rect x="835" y="685" width="135" height="62" class="powerComponent"/>
   <text x="874" y="711" class="label">Fus 3A</text>
@@ -136,8 +136,8 @@
   <text x="1128" y="708" class="label">Pompa 2</text>
   <text x="1138" y="734" class="small">media</text>
   <rect x="1350" y="675" width="175" height="82" class="powerComponent"/>
-  <text x="1394" y="708" class="label">MOSFET 2</text>
-  <text x="1380" y="734" class="tiny">signal GPIO27</text>
+  <text x="1394" y="708" class="label">Rele 2</text>
+  <text x="1372" y="734" class="tiny">GPIO27, active-low</text>
 
   <rect x="835" y="815" width="135" height="62" class="powerComponent"/>
   <text x="874" y="841" class="label">Fus 3A</text>
@@ -146,24 +146,24 @@
   <text x="1128" y="838" class="label">Pompa 3</text>
   <text x="1140" y="864" class="small">secca</text>
   <rect x="1350" y="805" width="175" height="82" class="powerComponent"/>
-  <text x="1394" y="838" class="label">MOSFET 3</text>
-  <text x="1380" y="864" class="tiny">signal GPIO22</text>
+  <text x="1394" y="838" class="label">Rele 3</text>
+  <text x="1372" y="864" class="tiny">GPIO22, active-low</text>
 
-  <!-- Power routing pump rows -->
+  <!-- Power routing pump rows: fuse -> (sotto la pompa) -> rele COM ; rele NO -> pompa+ ; pompa- -> GND bus -->
   <path d="M1398 350 V515 H902 V555" class="pos"/>
-  <path d="M970 586 H1080" class="pos"/>
-  <path d="M1240 586 H1350" class="neg"/>
-  <path d="M1525 586 H1580 V426 H1500" class="neg"/>
+  <path d="M902 617 V645 H1437 V627" class="pos"/>
+  <path d="M1350 586 H1240" class="pos"/>
+  <path d="M1080 586 H1060 V452 H1295" class="neg"/>
 
   <path d="M1433 350 V645 H902 V685" class="pos"/>
-  <path d="M970 716 H1080" class="pos"/>
-  <path d="M1240 716 H1350" class="neg"/>
-  <path d="M1525 716 H1605 V426 H1500" class="neg"/>
+  <path d="M902 747 V770 H1437 V757" class="pos"/>
+  <path d="M1350 716 H1240" class="pos"/>
+  <path d="M1080 716 H1060 V452 H1295" class="neg"/>
 
   <path d="M1468 350 V775 H902 V815" class="pos"/>
-  <path d="M970 846 H1080" class="pos"/>
-  <path d="M1240 846 H1350" class="neg"/>
-  <path d="M1525 846 H1630 V426 H1500" class="neg"/>
+  <path d="M902 877 V900 H1437 V887" class="pos"/>
+  <path d="M1350 846 H1240" class="pos"/>
+  <path d="M1080 846 H1060 V452 H1295" class="neg"/>
 
   <!-- Logic box -->
   <rect x="60" y="555" width="620" height="435" class="logicBox"/>
@@ -201,8 +201,8 @@
   <text x="710" y="699" class="tiny">2 - GPIO27 Pompa 2</text>
   <text x="710" y="723" class="tiny">3 - GPIO22 Pompa 3</text>
   <text x="710" y="747" class="tiny">4 - GND segnale</text>
-  <text x="710" y="771" class="tiny">5 - scorta / feedback</text>
-  <text x="710" y="795" class="tiny">6 - scorta</text>
+  <text x="710" y="771" class="tiny">5 - VCC rele (3.3V)</text>
+  <text x="710" y="795" class="tiny">6 - JD-VCC rele (5V)</text>
 
   <!-- Signal routing, horizontal lanes -->
   <path d="M620 680 H690" class="signal"/>
@@ -227,8 +227,9 @@
   <path d="M585 870 H1070" class="i2c"/>
 
   <!-- Notes -->
-  <rect x="60" y="1120" width="1660" height="70" fill="#fff7ed" stroke="#b56b1f" stroke-width="2" rx="10"/>
+  <rect x="60" y="1120" width="1660" height="100" fill="#fff7ed" stroke="#b56b1f" stroke-width="2" rx="10"/>
   <text x="85" y="1148" class="warn">Note operative</text>
-  <text x="230" y="1148" class="small">1. Mai collegare pompe o +12V ai pin GPIO del Raspberry: i GPIO comandano solo SIGNAL dei MOSFET.</text>
-  <text x="230" y="1172" class="small">2. Potenza nel box potenza; nel box logica solo 5V, segnali e sensori. Fusibili vicino alla batteria e su ogni ramo pompa.</text>
+  <text x="230" y="1148" class="small">1. Mai collegare pompe o +12V ai pin GPIO del Raspberry: i GPIO comandano solo gli IN del modulo rele (active-low).</text>
+  <text x="85" y="1172" class="small">2. Potenza nel box potenza; nel box logica solo 5V, segnali e sensori. Fusibili vicino alla batteria e su ogni ramo pompa.</text>
+  <text x="85" y="1196" class="small">3. Rele active-low (initial_value=False all'avvio): VCC&lt;-3.3V Pi, JD-VCC&lt;-5V Pi, jumper VCC-JD-VCC rimosso. Diodo 1N5819 antiparallelo su ogni pompa (catodo al +).</text>
 </svg>

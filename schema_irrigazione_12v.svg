@@ -15,11 +15,13 @@
       .black { stroke: #111827; stroke-width: 7; fill: none; stroke-linecap: round; stroke-linejoin: round; }
       .green { stroke: #0f9f6e; stroke-width: 5; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 12 10; }
       .blue { stroke: #2563eb; stroke-width: 5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .violet { stroke: #7c3aed; stroke-width: 5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .orange { stroke: #f57c00; stroke-width: 5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
       .thin { stroke-width: 3; }
       .arrow { marker-end: url(#arrowhead); }
+      .hop { stroke: #fbfbf7; stroke-width: 26; fill: none; }
       .dotRed { fill: #d7263d; }
       .dotBlack { fill: #111827; }
-      .dotGreen { fill: #0f9f6e; }
     </style>
     <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0, 10 3.5, 0 7" fill="#334e68" />
@@ -29,13 +31,13 @@
   <rect class="page" width="1600" height="1100"/>
 
   <text x="70" y="70" class="title">Schema rapido irrigazione 12 V</text>
-  <text x="70" y="108" class="subtitle">3 pompe / 3 aree / 3 serbatoi - Raspberry Pi Zero 2 + MOSFET</text>
+  <text x="70" y="108" class="subtitle">3 pompe / 3 zone - Raspberry Pi Zero 2 + scheda rele 8 canali alimentata dai pin del Pi</text>
 
   <text x="70" y="165" class="section">ENERGIA</text>
-  <text x="70" y="520" class="section">CONTROLLO</text>
-  <text x="1010" y="165" class="section">USCITE POMPE</text>
+  <text x="70" y="515" class="section">CONTROLLO</text>
+  <text x="1080" y="510" class="section">POMPE / ZONE</text>
 
-  <!-- Energy blocks -->
+  <!-- ENERGIA -->
   <rect x="70" y="190" width="210" height="115" class="box"/>
   <text x="175" y="235" text-anchor="middle" class="label">Pannello</text>
   <text x="175" y="266" text-anchor="middle" class="small">solare 100 W</text>
@@ -62,10 +64,9 @@
   <text x="1205" y="228" text-anchor="middle" class="label">Bus potenza</text>
   <line x1="1120" y1="265" x2="1295" y2="265" class="red"/>
   <line x1="1120" y1="305" x2="1295" y2="305" class="black"/>
-  <text x="1320" y="272" class="small">+12 V</text>
-  <text x="1320" y="312" class="small">GND</text>
+  <text x="1125" y="256" class="tiny">+12 V</text>
+  <text x="1125" y="297" class="tiny">GND</text>
 
-  <!-- Energy arrows and wires -->
   <line x1="280" y1="248" x2="340" y2="248" class="blue arrow"/>
   <line x1="550" y1="235" x2="610" y2="235" class="red arrow"/>
   <line x1="550" y1="270" x2="610" y2="270" class="black arrow"/>
@@ -73,121 +74,135 @@
   <line x1="1025" y1="235" x2="1120" y2="265" class="red"/>
   <line x1="820" y1="285" x2="1120" y2="305" class="black"/>
 
-  <!-- Control blocks -->
-  <rect x="180" y="560" width="250" height="145" class="box"/>
-  <text x="305" y="605" text-anchor="middle" class="label">Buck 12-&gt;5 V</text>
-  <text x="305" y="637" text-anchor="middle" class="small">alimentatore Pi</text>
-  <text x="205" y="680" class="small">IN: 12 V</text>
-  <text x="330" y="680" class="small">OUT: 5 V</text>
+  <!-- CONTROLLO: buck -->
+  <rect x="70" y="530" width="230" height="130" class="box"/>
+  <text x="185" y="572" text-anchor="middle" class="label">Buck 12-&gt;5 V</text>
+  <text x="185" y="602" text-anchor="middle" class="small">uscita USB -&gt; Pi</text>
+  <text x="185" y="640" text-anchor="middle" class="tiny">IN: 12 V dal bus (fusibile 2 A)</text>
 
-  <rect x="545" y="545" width="285" height="180" class="box"/>
-  <text x="687" y="590" text-anchor="middle" class="label">Raspberry Pi</text>
-  <text x="687" y="622" text-anchor="middle" class="small">Zero 2 W</text>
-  <text x="575" y="665" class="small">5 V</text>
-  <text x="575" y="695" class="small">GND</text>
-  <text x="705" y="665" class="small">GPIO 1</text>
-  <text x="705" y="695" class="small">GPIO 2</text>
-  <text x="705" y="725" class="small">GPIO 3</text>
+  <!-- CONTROLLO: Raspberry Pi -->
+  <rect x="380" y="530" width="300" height="240" class="box"/>
+  <text x="505" y="565" text-anchor="middle" class="label">Raspberry Pi</text>
+  <text x="505" y="592" text-anchor="middle" class="small">Zero 2 W</text>
+  <text x="670" y="585" text-anchor="end" class="tiny">GPIO17 - pin 11</text>
+  <text x="670" y="610" text-anchor="end" class="tiny">GPIO27 - pin 13</text>
+  <text x="670" y="635" text-anchor="end" class="tiny">GPIO22 - pin 15</text>
+  <text x="670" y="670" text-anchor="end" class="tiny">3.3 V - pin 1</text>
+  <text x="670" y="700" text-anchor="end" class="tiny">5 V - pin 2</text>
+  <text x="670" y="730" text-anchor="end" class="tiny">GND - pin 6</text>
+  <text x="505" y="742" text-anchor="middle" class="tiny">alimentato via USB dal buck</text>
+  <text x="505" y="760" text-anchor="middle" class="tiny">collegamenti via morsettiera GPIO</text>
 
-  <rect x="545" y="780" width="285" height="100" class="box"/>
-  <text x="687" y="822" text-anchor="middle" class="label">Morsettiera</text>
-  <text x="687" y="852" text-anchor="middle" class="small">GPIO + GND comune</text>
+  <!-- CONTROLLO: scheda rele -->
+  <rect x="760" y="470" width="250" height="480" class="box"/>
+  <text x="885" y="505" text-anchor="middle" class="label">Scheda rele 8 canali</text>
+  <text x="885" y="532" text-anchor="middle" class="small">optoisolata - active low</text>
+  <text x="885" y="552" text-anchor="middle" class="tiny">(3 canali usati su 8)</text>
+  <text x="772" y="585" class="tiny">IN1 &lt;- GPIO17</text>
+  <text x="772" y="610" class="tiny">IN2 &lt;- GPIO27</text>
+  <text x="772" y="635" class="tiny">IN3 &lt;- GPIO22</text>
+  <text x="772" y="670" class="tiny">VCC &lt;- 3.3 V Pi</text>
+  <text x="772" y="700" class="tiny">JD-VCC &lt;- 5 V Pi</text>
+  <text x="772" y="730" class="tiny">GND &lt;- GND Pi</text>
+  <text x="1002" y="565" text-anchor="end" class="tiny">CH1 COM</text>
+  <text x="1002" y="600" text-anchor="end" class="tiny">CH1 NO</text>
+  <text x="1002" y="720" text-anchor="end" class="tiny">CH2 COM</text>
+  <text x="1002" y="755" text-anchor="end" class="tiny">CH2 NO</text>
+  <text x="1002" y="900" text-anchor="end" class="tiny">CH3 COM</text>
+  <text x="1002" y="935" text-anchor="end" class="tiny">CH3 NO</text>
+  <text x="772" y="865" class="tiny" font-weight="700">Jumper VCC/JD-VCC:</text>
+  <text x="772" y="884" class="tiny" font-weight="700">RIMOSSO</text>
 
-  <!-- Buck to bus and Pi -->
-  <line x1="1120" y1="265" x2="210" y2="265" class="red"/>
-  <line x1="210" y1="265" x2="210" y2="560" class="red"/>
-  <circle cx="210" cy="265" r="7" class="dotRed"/>
+  <!-- POMPE / ZONE -->
+  <rect x="1080" y="520" width="390" height="150" class="box"/>
+  <text x="1105" y="555" class="label">Area 1 - acqua alta</text>
+  <rect x="1130" y="570" width="110" height="50" class="box"/>
+  <text x="1185" y="601" text-anchor="middle" class="small">Pompa 1</text>
+  <text x="1258" y="625" class="tiny">da serbatoio 1</text>
+  <path d="M1150 620 V645 H1220 V620" class="black thin"/>
+  <polygon points="1196,637 1196,653 1180,645" fill="#111827"/>
+  <line x1="1176" y1="637" x2="1176" y2="653" class="black thin"/>
+  <text x="1185" y="666" text-anchor="middle" class="tiny">1N5819</text>
 
-  <line x1="1120" y1="305" x2="250" y2="305" class="black"/>
-  <line x1="250" y1="305" x2="250" y2="560" class="black"/>
-  <circle cx="250" cy="305" r="7" class="dotBlack"/>
+  <rect x="1080" y="675" width="390" height="150" class="box"/>
+  <text x="1105" y="710" class="label">Area 2 - media</text>
+  <rect x="1130" y="725" width="110" height="50" class="box"/>
+  <text x="1185" y="756" text-anchor="middle" class="small">Pompa 2</text>
+  <text x="1258" y="780" class="tiny">da serbatoio 2</text>
+  <path d="M1150 775 V800 H1220 V775" class="black thin"/>
+  <polygon points="1196,792 1196,808 1180,800" fill="#111827"/>
+  <line x1="1176" y1="792" x2="1176" y2="808" class="black thin"/>
+  <text x="1185" y="821" text-anchor="middle" class="tiny">1N5819</text>
 
-  <line x1="430" y1="615" x2="545" y2="615" class="red"/>
-  <text x="468" y="602" class="tiny">5 V</text>
-  <line x1="430" y1="665" x2="545" y2="695" class="black"/>
-  <text x="463" y="690" class="tiny">GND</text>
+  <rect x="1080" y="855" width="390" height="150" class="box"/>
+  <text x="1105" y="890" class="label">Area 3 - secca</text>
+  <rect x="1130" y="905" width="110" height="50" class="box"/>
+  <text x="1185" y="936" text-anchor="middle" class="small">Pompa 3</text>
+  <text x="1258" y="960" class="tiny">da serbatoio 3</text>
+  <path d="M1150 955 V980 H1220 V955" class="black thin"/>
+  <polygon points="1196,972 1196,988 1180,980" fill="#111827"/>
+  <line x1="1176" y1="972" x2="1176" y2="988" class="black thin"/>
+  <text x="1185" y="1001" text-anchor="middle" class="tiny">1N5819</text>
 
-  <line x1="687" y1="725" x2="687" y2="780" class="black thin"/>
-  <line x1="730" y1="665" x2="730" y2="780" class="green"/>
-  <line x1="760" y1="695" x2="760" y2="780" class="green"/>
-  <line x1="790" y1="725" x2="790" y2="780" class="green"/>
+  <!-- Rete +12 V -->
+  <path d="M1120 265 H1045 V895" class="red"/>
+  <path d="M1045 560 H1010" class="red"/>
+  <path d="M1045 715 H1010" class="red"/>
+  <path d="M1045 895 H1010" class="red"/>
+  <path d="M1045 420 H120 V530" class="red"/>
 
-  <!-- Pump module 1 -->
-  <rect x="1030" y="410" width="435" height="155" class="box"/>
-  <text x="1055" y="447" class="label">Area 1 - Serbatoio 1</text>
-  <rect x="1080" y="480" width="95" height="45" class="box"/>
-  <text x="1128" y="509" text-anchor="middle" class="small">Pompa 1</text>
-  <rect x="1270" y="470" width="105" height="65" class="box"/>
-  <text x="1322" y="498" text-anchor="middle" class="small">MOSFET</text>
-  <text x="1322" y="522" text-anchor="middle" class="tiny">low side</text>
-  <path d="M1080 502 L1010 502 L1010 265 L1120 265" class="red"/>
-  <path d="M1175 502 L1270 502" class="black"/>
-  <path d="M1322 535 L1322 600 L1120 600 L1120 305" class="black"/>
-  <path d="M830 820 L1280 820 L1280 535" class="green"/>
-  <text x="1188" y="492" class="tiny">diodo</text>
-  <path d="M1160 475 L1160 445 L1285 445 L1285 475" class="black thin"/>
-  <polygon points="1206,445 1226,435 1226,455" fill="#111827"/>
-  <line x1="1232" y1="435" x2="1232" y2="455" class="black thin"/>
-  <text x="1395" y="500" class="tiny">G</text>
-  <text x="1300" y="552" class="tiny">S</text>
-  <text x="1300" y="465" class="tiny">D</text>
+  <!-- Rete GND -->
+  <path d="M1120 305 H1075 V450 H160 V530" class="black"/>
+  <path d="M540 450 V530" class="black"/>
+  <text x="552" y="500" class="tiny">GND Pi -&gt; bus</text>
+  <path d="M1240 595 H1540" class="black"/>
+  <path d="M1240 750 H1540" class="black"/>
+  <path d="M1240 930 H1540 V305 H1295" class="black"/>
 
-  <!-- Pump module 2 -->
-  <rect x="1030" y="610" width="435" height="155" class="box"/>
-  <text x="1055" y="647" class="label">Area 2 - Serbatoio 2</text>
-  <rect x="1080" y="680" width="95" height="45" class="box"/>
-  <text x="1128" y="709" text-anchor="middle" class="small">Pompa 2</text>
-  <rect x="1270" y="670" width="105" height="65" class="box"/>
-  <text x="1322" y="698" text-anchor="middle" class="small">MOSFET</text>
-  <text x="1322" y="722" text-anchor="middle" class="tiny">low side</text>
-  <path d="M1080 702 L990 702 L990 265 L1120 265" class="red"/>
-  <path d="M1175 702 L1270 702" class="black"/>
-  <path d="M1322 735 L1322 800 L1120 800 L1120 305" class="black"/>
-  <path d="M830 835 L1300 835 L1300 735" class="green"/>
-  <text x="1188" y="692" class="tiny">diodo</text>
-  <path d="M1160 675 L1160 645 L1285 645 L1285 675" class="black thin"/>
-  <polygon points="1206,645 1226,635 1226,655" fill="#111827"/>
-  <line x1="1232" y1="635" x2="1232" y2="655" class="black thin"/>
-  <text x="1395" y="700" class="tiny">G</text>
-  <text x="1300" y="752" class="tiny">S</text>
-  <text x="1300" y="665" class="tiny">D</text>
+  <!-- Uscite NO -> pompe (ponticello = nessuna giunzione sulla verticale +12 V) -->
+  <path d="M1031 595 H1059" class="hop"/>
+  <path d="M1010 595 H1130" class="red"/>
+  <path d="M1031 750 H1059" class="hop"/>
+  <path d="M1010 750 H1130" class="red"/>
+  <path d="M1010 930 H1130" class="red"/>
 
-  <!-- Pump module 3 -->
-  <rect x="1030" y="810" width="435" height="155" class="box"/>
-  <text x="1055" y="847" class="label">Area 3 - Serbatoio 3</text>
-  <rect x="1080" y="880" width="95" height="45" class="box"/>
-  <text x="1128" y="909" text-anchor="middle" class="small">Pompa 3</text>
-  <rect x="1270" y="870" width="105" height="65" class="box"/>
-  <text x="1322" y="898" text-anchor="middle" class="small">MOSFET</text>
-  <text x="1322" y="922" text-anchor="middle" class="tiny">low side</text>
-  <path d="M1080 902 L970 902 L970 265 L1120 265" class="red"/>
-  <path d="M1175 902 L1270 902" class="black"/>
-  <path d="M1322 935 L1322 1000 L1120 1000 L1120 305" class="black"/>
-  <path d="M830 850 L1320 850 L1320 870" class="green"/>
-  <text x="1188" y="892" class="tiny">diodo</text>
-  <path d="M1160 875 L1160 845 L1285 845 L1285 875" class="black thin"/>
-  <polygon points="1206,845 1226,835 1226,855" fill="#111827"/>
-  <line x1="1232" y1="835" x2="1232" y2="855" class="black thin"/>
-  <text x="1395" y="900" class="tiny">G</text>
-  <text x="1300" y="952" class="tiny">S</text>
-  <text x="1300" y="865" class="tiny">D</text>
+  <!-- Segnali e alimentazione scheda rele dal Pi -->
+  <path d="M680 580 H760" class="green"/>
+  <path d="M680 605 H760" class="green"/>
+  <path d="M680 630 H760" class="green"/>
+  <path d="M680 665 H760" class="violet"/>
+  <path d="M680 695 H760" class="orange"/>
+  <path d="M680 725 H760" class="black thin"/>
+  <path d="M300 600 H380" class="orange"/>
+  <text x="307" y="590" class="tiny">5 V USB</text>
 
-  <!-- Legend and notes -->
-  <rect x="70" y="925" width="870" height="120" class="warnbox"/>
-  <text x="95" y="965" class="label">Da ricordare mentre cabli</text>
-  <text x="95" y="1000" class="small">1. Tutti i GND insieme: batteria, buck, Raspberry e source dei MOSFET.</text>
-  <text x="95" y="1030" class="small">2. Ogni pompa: + al bus +12 V, - al drain MOSFET; source a GND.</text>
-  <text x="95" y="1060" class="small">3. Diodo su ogni pompa: catodo al +12 V, anodo al lato MOSFET.</text>
+  <!-- Giunzioni -->
+  <circle cx="1045" cy="420" r="7" class="dotRed"/>
+  <circle cx="1045" cy="560" r="7" class="dotRed"/>
+  <circle cx="1045" cy="715" r="7" class="dotRed"/>
+  <circle cx="540" cy="450" r="7" class="dotBlack"/>
+  <circle cx="1540" cy="595" r="7" class="dotBlack"/>
+  <circle cx="1540" cy="750" r="7" class="dotBlack"/>
 
-  <rect x="70" y="350" width="360" height="110" class="box"/>
-  <text x="95" y="388" class="label">Legenda fili</text>
-  <line x1="100" y1="420" x2="160" y2="420" class="red"/>
-  <text x="175" y="426" class="small">+12 V potenza</text>
-  <line x1="100" y1="450" x2="160" y2="450" class="black"/>
-  <text x="175" y="456" class="small">GND comune</text>
-  <line x1="100" y1="480" x2="160" y2="480" class="green"/>
-  <text x="175" y="486" class="small">segnale GPIO</text>
+  <!-- Legenda -->
+  <rect x="70" y="700" width="230" height="190" class="box"/>
+  <text x="95" y="735" class="label">Legenda</text>
+  <line x1="95" y1="763" x2="145" y2="763" class="red"/>
+  <text x="158" y="769" class="tiny">+12 V potenza</text>
+  <line x1="95" y1="791" x2="145" y2="791" class="black"/>
+  <text x="158" y="797" class="tiny">GND comune</text>
+  <line x1="95" y1="819" x2="145" y2="819" class="green"/>
+  <text x="158" y="825" class="tiny">segnale GPIO 3.3 V</text>
+  <line x1="95" y1="847" x2="145" y2="847" class="violet"/>
+  <text x="158" y="853" class="tiny">3.3 V dal Pi</text>
+  <line x1="95" y1="875" x2="145" y2="875" class="orange"/>
+  <text x="158" y="881" class="tiny">5 V dal Pi</text>
 
-  <text x="1010" y="1008" class="tiny">Aggiunte consigliate: resistenza 100-220 ohm in serie al gate, pulldown 47k-100k gate-GND, fusibile per ramo pompa.</text>
-  <text x="1010" y="1032" class="tiny">Schema funzionale per montaggio: verifica correnti, polarita e dimensionamento cavi prima di alimentare.</text>
+  <!-- Note -->
+  <rect x="70" y="955" width="900" height="140" class="warnbox"/>
+  <text x="95" y="985" class="label">Da ricordare mentre cabli</text>
+  <text x="95" y="1012" class="small">1. Tutti i GND al bus comune: batteria, buck, Raspberry, scheda rele e pompe.</text>
+  <text x="95" y="1038" class="small">2. Pompa: bus +12 V -&gt; COM -&gt; NO -&gt; pompa+; pompa- al bus GND. Diodo 1N5819 (catodo al +).</text>
+  <text x="95" y="1064" class="small">3. Scheda rele dal Pi: VCC &lt;- 3.3 V (pin 1), JD-VCC &lt;- 5 V (pin 2), GND &lt;- GND (pin 6). Jumper RIMOSSO.</text>
+  <text x="95" y="1090" class="small">4. Active-low: GPIO LOW = pompa ON; al boot rele aperti. Bobine ~210 mA dai 5 V del Pi (ok buck 3 A).</text>
 </svg>

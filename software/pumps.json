@@ -7,21 +7,21 @@
       "name": "Pompa 1 - zona acqua alta",
       "gpio": 17,
       "physical_pin": 11,
-      "active_high": true
+      "active_high": false
     },
     {
       "id": "pompa_2",
       "name": "Pompa 2 - zona media",
       "gpio": 27,
       "physical_pin": 13,
-      "active_high": true
+      "active_high": false
     },
     {
       "id": "pompa_3",
       "name": "Pompa 3 - zona secca",
       "gpio": 22,
       "physical_pin": 15,
-      "active_high": true
+      "active_high": false
     }
   ]
 }

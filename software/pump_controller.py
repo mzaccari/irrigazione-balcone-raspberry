@@ -20,7 +20,7 @@ class PumpConfig:
     name: str
     gpio: int
     physical_pin: int
-    active_high: bool = True
+    active_high: bool = False
 
 
 @dataclass(frozen=True)
@@ -46,25 +46,28 @@ DEFAULT_CONFIG = ControllerConfig(
             name="Pompa 1 - zona acqua alta",
             gpio=17,
             physical_pin=11,
+            active_high=False,
         ),
         PumpConfig(
             id="pompa_2",
             name="Pompa 2 - zona media",
             gpio=27,
             physical_pin=13,
+            active_high=False,
         ),
         PumpConfig(
             id="pompa_3",
             name="Pompa 3 - zona secca",
             gpio=22,
             physical_pin=15,
+            active_high=False,
         ),
     )
 )
 
 
 class MockOutput:
-    def __init__(self, pin: int, active_high: bool = True) -> None:
+    def __init__(self, pin: int, active_high: bool = False) -> None:
         self.pin = pin
         self.active_high = active_high
         self._active = False
@@ -223,7 +226,7 @@ def _parse_pump(data: dict[str, Any]) -> PumpConfig:
         name=str(data["name"]),
         gpio=int(data["gpio"]),
         physical_pin=int(data["physical_pin"]),
-        active_high=bool(data.get("active_high", True)),
+        active_high=bool(data.get("active_high", False)),
     )
 
 
