@@ -47,7 +47,7 @@
   <rect x="30" y="20" width="1740" height="1210" class="frame"/>
 
   <text x="60" y="62" class="title">Irrigazione balcone - schema elettrico core</text>
-  <text x="60" y="92" class="subtitle">Raspberry Pi Zero 2 W con morsettiera GPIO: solo segnali. Potenza pompe separata in box potenza.</text>
+  <text x="60" y="92" class="subtitle">Raspberry Pi 4 con morsettiera GPIO: solo segnali. Potenza pompe separata in box potenza. Due buck dedicati (Pi / rele).</text>
 
   <rect x="1225" y="35" width="485" height="125" class="neutralComponent"/>
   <text x="1245" y="62" class="label">Legenda linee</text>
@@ -112,11 +112,20 @@
   <path d="M465 430 C620 485, 1000 426, 1295 426" class="neg"/>
 
   <rect x="835" y="400" width="210" height="70" class="powerComponent"/>
-  <text x="883" y="429" class="label">Buck 12V-&gt;5V</text>
-  <text x="876" y="452" class="small">3A, fusibile 2A, per Raspberry</text>
+  <text x="883" y="422" class="label">Buck 1: 12V-&gt;5V</text>
+  <text x="876" y="444" class="small">5A, fusibile 3A</text>
+  <text x="864" y="462" class="tiny">solo per Raspberry Pi 4</text>
   <path d="M1398 350 V372 H940 V400" class="pos"/>
   <path d="M940 470 V505 H850 V780 H690" class="fivev"/>
   <path d="M1045 435 H1295" class="neg"/>
+
+  <rect x="1560" y="280" width="140" height="70" class="powerComponent"/>
+  <text x="1583" y="304" class="label">Buck 2</text>
+  <text x="1571" y="324" class="small">solo JD-VCC rele</text>
+  <text x="1575" y="342" class="tiny">3A, fusibile 2A</text>
+  <path d="M1500 315 H1560" class="pos"/>
+  <path d="M1630 350 V520 H1437 V545" class="fivev"/>
+  <text x="1554" y="513" class="tiny">JD-VCC (comune a Rele 1/2/3)</text>
 
   <!-- Pump rows: bus+12V -> fuse -> rele (COM/NO) -> pompa+ ; pompa- -> GND bus diretto -->
   <rect x="835" y="555" width="135" height="62" class="powerComponent"/>
@@ -172,8 +181,8 @@
 
   <rect x="100" y="650" width="205" height="100" class="component"/>
   <text x="133" y="682" class="label">Raspberry Pi</text>
-  <text x="151" y="706" class="small">Zero 2 W</text>
-  <text x="125" y="732" class="tiny">alimentato via 5V USB</text>
+  <text x="147" y="706" class="small">4 Model B</text>
+  <text x="118" y="732" class="tiny">alimentato via Buck 1 (USB-C)</text>
 
   <rect x="375" y="640" width="245" height="125" class="component"/>
   <text x="416" y="672" class="label">Morsettiera GPIO</text>
@@ -202,7 +211,7 @@
   <text x="710" y="723" class="tiny">3 - GPIO22 Pompa 3</text>
   <text x="710" y="747" class="tiny">4 - GND segnale</text>
   <text x="710" y="771" class="tiny">5 - VCC rele (3.3V)</text>
-  <text x="710" y="795" class="tiny">6 - JD-VCC rele (5V)</text>
+  <text x="710" y="795" class="tiny">6 - scorta</text>
 
   <!-- Signal routing, horizontal lanes -->
   <path d="M620 680 H690" class="signal"/>
@@ -231,5 +240,5 @@
   <text x="85" y="1148" class="warn">Note operative</text>
   <text x="230" y="1148" class="small">1. Mai collegare pompe o +12V ai pin GPIO del Raspberry: i GPIO comandano solo gli IN del modulo rele (active-low).</text>
   <text x="85" y="1172" class="small">2. Potenza nel box potenza; nel box logica solo 5V, segnali e sensori. Fusibili vicino alla batteria e su ogni ramo pompa.</text>
-  <text x="85" y="1196" class="small">3. Rele active-low (initial_value=False all'avvio): VCC&lt;-3.3V Pi, JD-VCC&lt;-5V Pi, jumper VCC-JD-VCC rimosso. Diodo 1N5819 antiparallelo su ogni pompa (catodo al +).</text>
+  <text x="85" y="1196" class="small">3. Rele active-low (initial_value=False all'avvio): VCC&lt;-3.3V Pi, JD-VCC&lt;-Buck 2 dedicato, jumper rimosso. Diodo 1N5819 antiparallelo su ogni pompa (catodo al +). Testare Buck 1 e Buck 2 sotto carico prima di collegare Pi e rele.</text>
 </svg>

@@ -22,6 +22,7 @@
       .hop { stroke: #fbfbf7; stroke-width: 26; fill: none; }
       .dotRed { fill: #d7263d; }
       .dotBlack { fill: #111827; }
+      .dotOrange { fill: #f57c00; }
     </style>
     <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
       <polygon points="0 0, 10 3.5, 0 7" fill="#334e68" />
@@ -31,7 +32,7 @@
   <rect class="page" width="1600" height="1100"/>
 
   <text x="70" y="70" class="title">Schema rapido irrigazione 12 V</text>
-  <text x="70" y="108" class="subtitle">3 pompe / 3 zone - Raspberry Pi Zero 2 + scheda rele 8 canali alimentata dai pin del Pi</text>
+  <text x="70" y="108" class="subtitle">3 pompe / 3 zone - Raspberry Pi 4 + scheda rele 8 canali - due buck dedicati (Pi / rele)</text>
 
   <text x="70" y="165" class="section">ENERGIA</text>
   <text x="70" y="515" class="section">CONTROLLO</text>
@@ -74,24 +75,29 @@
   <line x1="1025" y1="235" x2="1120" y2="265" class="red"/>
   <line x1="820" y1="285" x2="1120" y2="305" class="black"/>
 
-  <!-- CONTROLLO: buck -->
-  <rect x="70" y="530" width="230" height="130" class="box"/>
-  <text x="185" y="572" text-anchor="middle" class="label">Buck 12-&gt;5 V</text>
-  <text x="185" y="602" text-anchor="middle" class="small">uscita USB -&gt; Pi</text>
-  <text x="185" y="640" text-anchor="middle" class="tiny">IN: 12 V dal bus (fusibile 2 A)</text>
+  <!-- CONTROLLO: buck 1 (Pi) -->
+  <rect x="70" y="530" width="230" height="95" class="box"/>
+  <text x="185" y="562" text-anchor="middle" class="label">Buck 1</text>
+  <text x="185" y="586" text-anchor="middle" class="small">per Raspberry Pi 4 (5 A)</text>
+  <text x="185" y="612" text-anchor="middle" class="tiny">IN: 12 V dal bus (fusibile 3 A)</text>
+
+  <!-- CONTROLLO: buck 2 (rele) -->
+  <rect x="70" y="635" width="230" height="95" class="box"/>
+  <text x="185" y="667" text-anchor="middle" class="label">Buck 2</text>
+  <text x="185" y="691" text-anchor="middle" class="small">solo JD-VCC rele (3 A)</text>
+  <text x="185" y="717" text-anchor="middle" class="tiny">IN: 12 V dal bus (fusibile 2 A)</text>
 
   <!-- CONTROLLO: Raspberry Pi -->
   <rect x="380" y="530" width="300" height="240" class="box"/>
   <text x="505" y="565" text-anchor="middle" class="label">Raspberry Pi</text>
-  <text x="505" y="592" text-anchor="middle" class="small">Zero 2 W</text>
+  <text x="505" y="592" text-anchor="middle" class="small">4 Model B</text>
   <text x="670" y="585" text-anchor="end" class="tiny">GPIO17 - pin 11</text>
   <text x="670" y="610" text-anchor="end" class="tiny">GPIO27 - pin 13</text>
   <text x="670" y="635" text-anchor="end" class="tiny">GPIO22 - pin 15</text>
   <text x="670" y="670" text-anchor="end" class="tiny">3.3 V - pin 1</text>
-  <text x="670" y="700" text-anchor="end" class="tiny">5 V - pin 2</text>
-  <text x="670" y="730" text-anchor="end" class="tiny">GND - pin 6</text>
-  <text x="505" y="742" text-anchor="middle" class="tiny">alimentato via USB dal buck</text>
-  <text x="505" y="760" text-anchor="middle" class="tiny">collegamenti via morsettiera GPIO</text>
+  <text x="670" y="700" text-anchor="end" class="tiny">GND - pin 6</text>
+  <text x="505" y="730" text-anchor="middle" class="tiny">alimentato via USB-C dal Buck 1</text>
+  <text x="505" y="750" text-anchor="middle" class="tiny">collegamenti via morsettiera GPIO</text>
 
   <!-- CONTROLLO: scheda rele -->
   <rect x="760" y="470" width="250" height="480" class="box"/>
@@ -102,9 +108,9 @@
   <text x="772" y="610" class="tiny">IN2 &lt;- GPIO27</text>
   <text x="772" y="635" class="tiny">IN3 &lt;- GPIO22</text>
   <text x="772" y="670" class="tiny">VCC &lt;- 3.3 V Pi</text>
-  <text x="772" y="700" class="tiny">JD-VCC &lt;- 5 V Pi</text>
-  <text x="772" y="730" class="tiny">GND &lt;- GND Pi</text>
-  <text x="1002" y="565" text-anchor="end" class="tiny">CH1 COM</text>
+  <text x="772" y="700" class="tiny">GND &lt;- GND Pi</text>
+  <text x="772" y="798" class="tiny" font-weight="700">JD-VCC &lt;- Buck 2</text>
+  <text x="1002" y="570" text-anchor="end" class="tiny">CH1 COM</text>
   <text x="1002" y="600" text-anchor="end" class="tiny">CH1 NO</text>
   <text x="1002" y="720" text-anchor="end" class="tiny">CH2 COM</text>
   <text x="1002" y="755" text-anchor="end" class="tiny">CH2 NO</text>
@@ -144,12 +150,16 @@
   <line x1="1176" y1="972" x2="1176" y2="988" class="black thin"/>
   <text x="1185" y="1001" text-anchor="middle" class="tiny">1N5819</text>
 
-  <!-- Rete +12 V -->
+  <!-- Rete +12 V pompe -->
   <path d="M1120 265 H1045 V895" class="red"/>
   <path d="M1045 560 H1010" class="red"/>
   <path d="M1045 715 H1010" class="red"/>
   <path d="M1045 895 H1010" class="red"/>
-  <path d="M1045 420 H120 V530" class="red"/>
+
+  <!-- Rete +12 V verso i due buck -->
+  <path d="M1045 420 H50 V578 H70" class="red"/>
+  <path d="M50 578 V682 H70" class="red"/>
+  <circle cx="50" cy="578" r="7" class="dotRed"/>
 
   <!-- Rete GND -->
   <path d="M1120 305 H1075 V450 H160 V530" class="black"/>
@@ -166,15 +176,20 @@
   <path d="M1010 750 H1130" class="red"/>
   <path d="M1010 930 H1130" class="red"/>
 
+  <!-- Buck 1 -> Pi (5 V USB-C) -->
+  <path d="M300 578 H380" class="orange"/>
+  <text x="307" y="568" class="tiny">5 V USB-C</text>
+
+  <!-- Buck 2 -> JD-VCC scheda rele (bypassa Pi e legenda) -->
+  <path d="M300 682 H320 V800 H760" class="orange"/>
+  <circle cx="300" cy="682" r="7" class="dotOrange"/>
+
   <!-- Segnali e alimentazione scheda rele dal Pi -->
   <path d="M680 580 H760" class="green"/>
   <path d="M680 605 H760" class="green"/>
   <path d="M680 630 H760" class="green"/>
   <path d="M680 665 H760" class="violet"/>
-  <path d="M680 695 H760" class="orange"/>
-  <path d="M680 725 H760" class="black thin"/>
-  <path d="M300 600 H380" class="orange"/>
-  <text x="307" y="590" class="tiny">5 V USB</text>
+  <path d="M680 695 H760" class="black thin"/>
 
   <!-- Giunzioni -->
   <circle cx="1045" cy="420" r="7" class="dotRed"/>
@@ -185,24 +200,24 @@
   <circle cx="1540" cy="750" r="7" class="dotBlack"/>
 
   <!-- Legenda -->
-  <rect x="70" y="700" width="230" height="190" class="box"/>
-  <text x="95" y="735" class="label">Legenda</text>
-  <line x1="95" y1="763" x2="145" y2="763" class="red"/>
-  <text x="158" y="769" class="tiny">+12 V potenza</text>
-  <line x1="95" y1="791" x2="145" y2="791" class="black"/>
-  <text x="158" y="797" class="tiny">GND comune</text>
-  <line x1="95" y1="819" x2="145" y2="819" class="green"/>
-  <text x="158" y="825" class="tiny">segnale GPIO 3.3 V</text>
-  <line x1="95" y1="847" x2="145" y2="847" class="violet"/>
-  <text x="158" y="853" class="tiny">3.3 V dal Pi</text>
-  <line x1="95" y1="875" x2="145" y2="875" class="orange"/>
-  <text x="158" y="881" class="tiny">5 V dal Pi</text>
+  <rect x="70" y="745" width="230" height="190" class="box"/>
+  <text x="95" y="780" class="label">Legenda</text>
+  <line x1="95" y1="808" x2="145" y2="808" class="red"/>
+  <text x="158" y="814" class="tiny">+12 V potenza</text>
+  <line x1="95" y1="836" x2="145" y2="836" class="black"/>
+  <text x="158" y="842" class="tiny">GND comune</text>
+  <line x1="95" y1="864" x2="145" y2="864" class="green"/>
+  <text x="158" y="870" class="tiny">segnale GPIO 3.3 V</text>
+  <line x1="95" y1="892" x2="145" y2="892" class="violet"/>
+  <text x="158" y="898" class="tiny">3.3 V dal Pi</text>
+  <line x1="95" y1="920" x2="145" y2="920" class="orange"/>
+  <text x="158" y="926" class="tiny">5 V da un buck</text>
 
   <!-- Note -->
   <rect x="70" y="955" width="900" height="140" class="warnbox"/>
   <text x="95" y="985" class="label">Da ricordare mentre cabli</text>
-  <text x="95" y="1012" class="small">1. Tutti i GND al bus comune: batteria, buck, Raspberry, scheda rele e pompe.</text>
+  <text x="95" y="1012" class="small">1. Tutti i GND al bus comune: batteria, Buck 1, Buck 2, Raspberry, scheda rele e pompe.</text>
   <text x="95" y="1038" class="small">2. Pompa: bus +12 V -&gt; COM -&gt; NO -&gt; pompa+; pompa- al bus GND. Diodo 1N5819 (catodo al +).</text>
-  <text x="95" y="1064" class="small">3. Scheda rele dal Pi: VCC &lt;- 3.3 V (pin 1), JD-VCC &lt;- 5 V (pin 2), GND &lt;- GND (pin 6). Jumper RIMOSSO.</text>
-  <text x="95" y="1090" class="small">4. Active-low: GPIO LOW = pompa ON; al boot rele aperti. Bobine ~210 mA dai 5 V del Pi (ok buck 3 A).</text>
+  <text x="95" y="1064" class="small">3. Scheda rele: VCC &lt;- 3.3 V Pi (pin 1), GND &lt;- GND Pi (pin 6), JD-VCC &lt;- Buck 2 dedicato. Jumper RIMOSSO.</text>
+  <text x="95" y="1090" class="small">4. Testa ENTRAMBI i buck sotto carico prima di collegare Pi e rele. Accendi in sequenza: buck -&gt; Pi -&gt; rele.</text>
 </svg>

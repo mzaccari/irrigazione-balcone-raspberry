@@ -1,0 +1,13 @@
+{
+  "name": "irrigatore",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Progetto per controllare tre pompe 12 V tramite Raspberry Pi 4 e modulo relè 8 canali.",
+  "type": "module",
+  "scripts": {
+    "render-schematic": "node scripts/render_balcony_irrigation_schematic.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}
