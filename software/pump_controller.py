@@ -71,19 +71,30 @@ class MockOutput:
         self.pin = pin
         self.active_high = active_high
         self._active = False
+        self._closed = False
 
     @property
     def is_active(self) -> bool:
         return self._active
 
+    @property
+    def closed(self) -> bool:
+        return self._closed
+
     def on(self) -> None:
+        # Mima gpiozero: agire su un device chiuso solleva.
+        if self._closed:
+            raise RuntimeError("MockOutput chiuso: on() non consentito")
         self._active = True
 
     def off(self) -> None:
+        if self._closed:
+            raise RuntimeError("MockOutput chiuso: off() non consentito")
         self._active = False
 
     def close(self) -> None:
-        self.off()
+        self._active = False
+        self._closed = True
 
 
 class PumpController:
@@ -149,7 +160,11 @@ class PumpController:
                 output.close()
 
     def _all_off_locked(self) -> None:
+        # Idempotente: salta i device gia chiusi cosi la rete di sicurezza
+        # (atexit del demone) non solleva se lo spegnimento e gia avvenuto.
         for output in self._outputs.values():
+            if getattr(output, "closed", False):
+                continue
             output.off()
 
     def _get_pump(self, pump_id: str) -> PumpConfig:
