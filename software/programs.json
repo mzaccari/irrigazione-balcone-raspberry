@@ -1,0 +1,24 @@
+{
+  "options": {
+    "catch_up_minutes": 5,
+    "max_run_seconds": 1200,
+    "timezone": "Europe/Rome"
+  },
+  "pumps": {
+    "pompa_1": {
+      "tank_liters": 25,
+      "flow_lph": 600,
+      "programs": []
+    },
+    "pompa_2": {
+      "tank_liters": 25,
+      "flow_lph": 600,
+      "programs": []
+    },
+    "pompa_3": {
+      "tank_liters": 20,
+      "flow_lph": 600,
+      "programs": []
+    }
+  }
+}

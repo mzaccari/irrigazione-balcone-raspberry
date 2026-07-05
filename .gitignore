@@ -27,3 +27,6 @@ desktop.ini
 
 # Runtime logs
 *.log
+
+# Runtime state del demone (stato pompe, coda comandi, storico)
+software/runtime/

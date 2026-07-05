@@ -1,0 +1,24 @@
+# Demone di irrigazione: unico proprietario delle pompe/GPIO.
+# Copia in /etc/systemd/system/ e adatta i percorsi (User, WorkingDirectory, ExecStart).
+#   sudo cp software/irrigatore-daemon.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now irrigatore-daemon
+#   journalctl -u irrigatore-daemon -f
+[Unit]
+Description=Irrigazione balcone - demone pompe
+After=network.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/irrigatore
+Environment=PUMP_MOCK=0
+ExecStart=/home/pi/irrigatore/.venv/bin/python /home/pi/irrigatore/software/daemon.py
+# All'avvio e alla chiusura il demone porta tutte le pompe in stato sicuro (spente).
+Restart=always
+RestartSec=2
+KillSignal=SIGTERM
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

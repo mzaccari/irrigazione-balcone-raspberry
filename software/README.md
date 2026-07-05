@@ -1,60 +1,124 @@
-# Software test pompe
+# Software irrigazione balcone
 
-Primo controllo manuale per le tre pompe dell'irrigazione balcone.
+Controllo delle tre pompe con **programmazione oraria** e **stima dell'acqua nei
+serbatoi**, gestibile da interfaccia web.
+
+## Architettura (due processi)
+
+Su Raspberry un solo processo puo possedere i GPIO, quindi il sistema e diviso:
+
+- **`daemon.py`** — il demone: unico proprietario delle pompe. Fa girare lo
+  scheduling anche a browser chiuso, stima l'acqua, protegge dalla marcia a
+  secco. Loop a singolo thread: comandi manuali e avvii programmati passano tutti
+  dallo stesso stato, quindi non si sovrappongono.
+- **`streamlit_app.py`** — l'interfaccia web: NON comanda i GPIO. Modifica i
+  programmi, mostra lo stato live e invia comandi manuali al demone.
+
+I due processi si coordinano tramite file (nessun database, tutto ispezionabile):
+
+| File | Chi scrive | Contenuto |
+| --- | --- | --- |
+| `pumps.json` | (fisso) | Hardware: id pompa, GPIO, pin fisico |
+| `programs.json` | interfaccia | Programmi, capacita/portata serbatoi, opzioni |
+| `runtime/state.json` | demone | Stato live: pompe on/off, acqua, prossimi avvii, heartbeat |
+| `runtime/commands/` | interfaccia | Coda comandi manuali (un file per comando) |
+| `runtime/events.jsonl` | demone | Storico avvii/spegnimenti/avvisi |
+
+La cartella `runtime/` non e versionata (vedi `.gitignore`).
+
+Moduli di supporto: `scheduler.py` (logica pura di scheduling + acqua, con clock
+iniettabile), `store.py` (I/O atomico + coda), `clock.py`, `paths.py`.
 
 ## Pin usati
 
-| Pompa | GPIO BCM | Pin fisico | Nota |
-| --- | ---: | ---: | --- |
-| Pompa 1 | 17 | 11 | Zona acqua alta |
-| Pompa 2 | 27 | 13 | Zona media |
-| Pompa 3 | 22 | 15 | Zona secca |
+| Pompa | GPIO BCM | Pin fisico | Serbatoio | Nota |
+| --- | ---: | ---: | ---: | --- |
+| Pompa 1 | 17 | 11 | 25 L | Zona acqua alta |
+| Pompa 2 | 27 | 13 | 25 L | Zona media |
+| Pompa 3 | 22 | 15 | 20 L | Zona secca |
 
-Il comando del modulo relè e attivo basso: GPIO basso = relè chiuso = pompa accesa. `pumps.json` ha `active_high: false` per tutte e tre le pompe; `gpiozero` applica l'inversione (`OutputDevice(active_high=False, initial_value=False)`), quindi `on()`/`off()` restano invariati nel codice e nell'app.
+Comando relè **attivo basso**: GPIO basso = relè chiuso = pompa accesa.
+`pumps.json` ha `active_high: false` per tutte e tre; `gpiozero` applica
+l'inversione, quindi `on()`/`off()` restano invariati. Cablaggio scheda relè e
+alimentazione: vedi il README principale.
 
-Cablaggio scheda relè (8 canali, 3 usati): bus 12V+ -> COM -> NO -> pompa+, pompa- diretta al bus GND, diodo 1N5819 in antiparallelo su ogni pompa. Sul lato segnale: togli il jumper VCC-JD-VCC, VCC (opto) al 3.3V del Pi, JD-VCC (bobine) a un **secondo buck 12V->5V dedicato** (non al Pi, per non far passare la corrente delle bobine dal suo rail), GND comune, IN1/IN2/IN3 su GPIO17/27/22.
-
-## Installazione sul Raspberry
+## Installazione
 
 ```bash
 cd /percorso/del/progetto
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate          # su Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Avvio
+## Avvio in simulazione (PC, senza GPIO)
 
-Simulazione, utile su PC o prima prova senza GPIO:
+Servono **due terminali** (mock automatico su Windows/non-Linux):
 
 ```bash
+# terminale 1: il demone
+PUMP_MOCK=1 python software/daemon.py
+
+# terminale 2: l'interfaccia
 PUMP_MOCK=1 streamlit run software/streamlit_app.py
 ```
 
-GPIO reali sul Raspberry:
+## Avvio sul Raspberry (GPIO reali)
 
 ```bash
+# demone (comanda le pompe)
+PUMP_MOCK=0 python software/daemon.py
+
+# interfaccia, raggiungibile dalla rete
 PUMP_MOCK=0 streamlit run software/streamlit_app.py --server.address 0.0.0.0 --server.port 8501
 ```
 
-Da un altro dispositivo sulla stessa rete apri:
+Da un altro dispositivo: `http://IP_DEL_RASPBERRY:8501` (l'IP con `hostname -I`).
 
-```text
-http://IP_DEL_RASPBERRY:8501
-```
+Per l'avvio automatico all'accensione usa i servizi systemd
+`irrigatore-daemon.service` e `irrigatore-web.service` (istruzioni dentro i file).
 
-Per trovare l'IP sul Raspberry:
+## Uso dell'interfaccia
+
+- **Manuale**: accendi/spegni/impulso per prova; `STOP TUTTO` ferma subito.
+- **Programmi**: per ogni pompa, aggiungi programmi con data d'inizio, fine (o
+  "per sempre"), uno o piu orari e durata. Valgono ogni giorno nell'intervallo.
+- **Serbatoi**: livello stimato, "Serbatoio riempito" per azzerare il conteggio,
+  configurazione di capacita e **portata** (con nota di calibrazione).
+- **Storico**: ultimi eventi (avvii, spegnimenti, salti per acqua bassa).
+
+### Nota sull'acqua
+
+600 L/h = 10 L/min: un serbatoio da 25 L si svuota in ~2,5 minuti a portata
+nominale. La stima e **portata × tempo**, non una misura reale. Con teste basse
+(~1,5 m) e tubo sottile la portata reale e verosimilmente piu bassa: **calibra**
+(misura i litri erogati in 30 s e moltiplica ×120 per i L/h) e inserisci il
+valore nella tab Serbatoi. Se l'acqua stimata non basta, l'avvio programmato
+viene **saltato e segnalato** (gli avvii manuali procedono con avviso).
+
+## Test
+
+Logica pura e simulazione del demone, tutto su PC senza hardware:
 
 ```bash
-hostname -I
+python -m pytest software/tests -q
 ```
 
-## Prima sequenza di test
+## Sicurezza
 
-0. Testa entrambi i buck isolati e sotto carico (multimetro, 5.0-5.1V stabili) prima di collegare qualunque scheda: vedi checklist di accensione nel README principale. Poi verifica il cablaggio scheda relè a Pi spento: jumper VCC-JD-VCC rimosso, VCC dal 3.3V del Pi, JD-VCC dal secondo buck dedicato, IN1/2/3 su GPIO17/27/22. Accendi il Pi e controlla che tutti e tre i relè restino aperti (led IN spenti): e lo stato sicuro atteso all'avvio.
-1. Avvia l'interfaccia in simulazione e verifica che i pulsanti cambino stato.
-2. Avvia in modalita GPIO reale con i serbatoi pieni o le pompe pronte a girare a secco solo per tempi brevissimi.
-3. Usa prima `Impulso` a 0.5-1 secondo su una pompa alla volta.
-4. Se qualcosa non torna, premi `STOP TUTTO` e togli alimentazione 12 V alle pompe.
+- Stato sicuro (tutte spente) all'avvio e alla chiusura del demone.
+- Tetto `max_run_seconds`: nessuna pompa resta accesa oltre il limite.
+- `STOP TUTTO` interrompe subito; un comando manuale ha precedenza su un avvio
+  programmato in corso.
 
-La configurazione tiene `allow_multiple=false`, quindi un'accensione spegne automaticamente le altre pompe.
+### Checklist quando arriva il Raspberry (verifiche hardware)
+
+1. Segui la sequenza di accensione del README principale (buck sotto carico, ecc.).
+2. Avvia solo il demone in `PUMP_MOCK=0` e prova un `Impulso` di 0,5-1 s su una
+   pompa alla volta con i serbatoi pieni.
+3. **Crash-safety del relè**: con una pompa accesa, termina il demone
+   bruscamente (`kill -9`) e verifica che la pompa si **spenga**. Se il tuo
+   modulo relè resta attivo con la linea GPIO rilasciata, aggiungi un **watchdog
+   hardware** (`/dev/watchdog`) che riavvia il Pi se il loop si blocca.
+4. Verifica che, con il demone attivo, l'interfaccia NON provi a possedere i GPIO
+   (qui non lo fa: usa solo la coda comandi e lo stato).
