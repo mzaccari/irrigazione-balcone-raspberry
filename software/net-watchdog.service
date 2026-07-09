@@ -1,0 +1,12 @@
+[Unit]
+Description=Network liveness watchdog (reboot Pi se la rete sparisce a lungo)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/net-watchdog.sh
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target

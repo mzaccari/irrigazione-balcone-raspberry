@@ -1,24 +1,55 @@
 {
   "options": {
-    "catch_up_minutes": 5,
+    "catch_up_minutes": 10,
     "max_run_seconds": 1200,
     "timezone": "Europe/Rome"
   },
   "pumps": {
     "pompa_1": {
       "tank_liters": 25,
-      "flow_lph": 600,
-      "programs": []
+      "flow_lph": 10,
+      "programs": [
+        {
+          "id": "estate",
+          "start_date": "2026-07-07",
+          "duration_s": 480,
+          "times": [
+            "06:30",
+            "20:00"
+          ]
+        }
+      ]
     },
     "pompa_2": {
       "tank_liters": 25,
-      "flow_lph": 600,
-      "programs": []
+      "flow_lph": 12,
+      "programs": [
+        {
+          "id": "estate",
+          "start_date": "2026-07-07",
+          "duration_s": 300,
+          "times": [
+            "06:45",
+            "20:15"
+          ]
+        }
+      ]
     },
     "pompa_3": {
-      "tank_liters": 20,
-      "flow_lph": 600,
-      "programs": []
+      "tank_liters": 30,
+      "flow_lph": 10,
+      "programs": [
+        {
+          "id": "d7e13d8b",
+          "enabled": true,
+          "start_date": "2026-07-08",
+          "end_date": null,
+          "times": [
+            "07:00"
+          ],
+          "duration_s": 360
+        }
+      ]
     }
   }
 }
