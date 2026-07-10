@@ -10,10 +10,14 @@ After=network.target
 
 [Service]
 Type=simple
-User=pi
-WorkingDirectory=/home/pi/irrigatore
+User=mzaccari
+WorkingDirectory=/home/mzaccari/irrigatore
 Environment=PUMP_MOCK=0
-ExecStart=/home/pi/irrigatore/.venv/bin/python /home/pi/irrigatore/software/daemon.py
+Environment=SENSOR_MOCK=0
+Environment=GPIOZERO_PIN_FACTORY=lgpio
+# Il topic ntfy (segreto) NON va qui: usa un drop-in non versionato, vedi
+# docs/upgrade-sensori.md ("notify.conf" con NOTIFY_NTFY_TOPIC).
+ExecStart=/home/mzaccari/irrigatore/.venv/bin/python /home/mzaccari/irrigatore/software/daemon.py
 # All'avvio e alla chiusura il demone porta tutte le pompe in stato sicuro (spente).
 Restart=always
 RestartSec=2

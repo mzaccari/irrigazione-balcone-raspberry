@@ -2,6 +2,10 @@ streamlit>=1.36,<2
 gpiozero>=2,<3
 lgpio>=0.2; platform_system == "Linux"
 
+# Sensori (Fase 5+): ADS1115 su I2C e telemetria Victron VE.Direct su seriale
+smbus2>=0.4; platform_system == "Linux"
+pyserial>=3.5
+
 # Fuso orario per zoneinfo su Windows (su Linux di solito c'e gia il DB di sistema)
 tzdata>=2024.1; platform_system == "Windows"
 

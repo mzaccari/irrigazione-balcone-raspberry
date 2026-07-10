@@ -4,6 +4,39 @@
     "max_run_seconds": 1200,
     "timezone": "Europe/Rome"
   },
+  "weather": {
+    "enabled": false,
+    "latitude": null,
+    "longitude": null,
+    "rain_skip_mm": 5.0,
+    "rain_prob_min": 80,
+    "et0_low": 2.0,
+    "et0_high": 5.0,
+    "fetch_hour": "05:30",
+    "max_age_hours": 30
+  },
+  "notify": {
+    "enabled": false,
+    "backend": "ntfy",
+    "events": [
+      "serbatoio_vuoto",
+      "saltato_serbatoio_vuoto",
+      "saltato_acqua",
+      "saltato_batteria",
+      "batteria_bassa",
+      "config_avviso",
+      "max_run"
+    ],
+    "heartbeat_time": "20:30"
+  },
+  "power": {
+    "enabled": false,
+    "serial_port": "/dev/ttyUSB0",
+    "v_low": 12.6,
+    "v_critical": 12.3,
+    "hold_minutes": 10,
+    "stale_seconds": 120
+  },
   "pumps": {
     "pompa_1": {
       "tank_liters": 25,
@@ -18,7 +51,10 @@
             "20:00"
           ]
         }
-      ]
+      ],
+      "sensors": {
+        "rain_exposed": false
+      }
     },
     "pompa_2": {
       "tank_liters": 25,
@@ -33,7 +69,10 @@
             "20:15"
           ]
         }
-      ]
+      ],
+      "sensors": {
+        "rain_exposed": false
+      }
     },
     "pompa_3": {
       "tank_liters": 30,
@@ -49,7 +88,10 @@
           ],
           "duration_s": 360
         }
-      ]
+      ],
+      "sensors": {
+        "rain_exposed": false
+      }
     }
   }
 }
