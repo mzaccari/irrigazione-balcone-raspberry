@@ -1,7 +1,8 @@
 # Stato deploy — irrigatore (handoff tra dispositivi)
 
-> File di riferimento per riprendere il lavoro da un altro PC. Aggiornato al 2026-07-05.
-> Leggi anche [checklist-accensione.md](checklist-accensione.md) e [../software/README.md](../software/README.md).
+> File di riferimento per riprendere il lavoro da un altro PC. Aggiornato al 2026-07-10.
+> Leggi anche [checklist-accensione.md](checklist-accensione.md), [upgrade-sensori.md](upgrade-sensori.md)
+> e [../software/README.md](../software/README.md).
 
 ## In una riga
 
@@ -51,19 +52,30 @@ PUMP_MOCK=1 .venv/bin/python -m pytest software -q      # test (dalla dir ~/irri
 
 Ridistribuire il codice dopo modifiche locali (dal PC di sviluppo):
 ```bash
-git archive --format=tar feature/scheduler-pompe | ssh mzaccari@192.168.178.39 'tar -xf - -C ~/irrigatore'
+git archive --format=tar <branch> | ssh mzaccari@192.168.178.39 'tar -xf - -C ~/irrigatore'
 sudo systemctl restart irrigatore-daemon irrigatore-web   # sul Pi, dopo il redeploy
 ```
+
+> ⚠ **Il deploy via `git archive` SOVRASCRIVE anche `software/programs.json` sul Pi.**
+> Se sul Pi la config è stata modificata dalla UI (programmi, portate, livelli...),
+> PRIMA del deploy ricattura la config live nel repo:
+> `scp mzaccari@192.168.178.39:~/irrigatore/software/programs.json software/` → commit → poi deploy.
+> (`runtime/` invece è al sicuro: non è versionato e l'archivio non lo contiene.)
 
 ## Hardware — mappa GPIO
 
 | Pompa | GPIO BCM | Pin fisico | Serbatoio |
 |---|---:|---:|---:|
-| Pompa 1 | 17 | 11 | 25 L |
-| Pompa 2 | 27 | 13 | 25 L |
-| Pompa 3 | 22 | 15 | 20 L |
+| Pompa 1 "Piante Grandi" | 17 | 11 | 25 L |
+| Pompa 2 "Piante aromatiche" | 27 | 13 | 25 L |
+| Pompa 3 "oleandri e ibisco" | 22 | 15 | 30 L |
 
-Relè **active-low**: GPIO basso = relè chiuso = pompa accesa. Portata 600 L/h **da calibrare**.
+Relè **active-low**: GPIO basso = relè chiuso = pompa accesa. Portate **calibrate coi
+gocciolatori: ~10–12 L/h** (i 600 nominali valgono solo a tubo aperto).
+
+Pin riservati per la Fase 6+ (vedi [upgrade-sensori.md](upgrade-sensori.md)):
+GPIO **23/24/25** galleggianti serbatoi, GPIO **2/3 (SDA/SCL)** ADS1115 umidità,
+una USB per il cavo VE.Direct dal Victron.
 
 ## Protezione al boot (applicata)
 
@@ -75,13 +87,25 @@ pull-down di default li terrebbero bassi (= pompe accese). Backup:
 ## Stato lavori
 
 **Fatto**
-- Fasi 0-3 (store, scheduler, demone, UI) — logica pura, 55 test pytest verdi.
-- Fase 4 software: deploy sul Pi, dipendenze, servizi systemd, demone verificato su GPIO reali (pompe spente, nessun errore).
+- Fasi 0-3 (store, scheduler, demone, UI) — logica pura, test pytest verdi.
+- Fase 4 completa: hardware montato, **sistema in esercizio** con schedule reale
+  (P1 06:30/20:00 ×480 s, P2 06:45/20:15 ×300 s, P3 07:00 ×360 s), portate calibrate,
+  net-watchdog e log temperatura installati, config reale catturata nel repo (`8939df4`).
 - Fix crash-safety spegnimento (`cfce715`), protezione boot config.txt, checklist e questo doc.
+- **Fase 5 (branch `feature/sensori`)**: software sensori/meteo/batteria/notifiche
+  completo e testato in mock (suite: 140 test verdi) — vedi
+  [upgrade-sensori.md](upgrade-sensori.md). Tutte le novità nascono **disabilitate**
+  in `programs.json`: il deploy del branch NON cambia il comportamento in esercizio.
 
-**Da fare (hardware, con l'utente sull'alimentazione)** — segui [checklist-accensione.md](checklist-accensione.md):
-1. Montaggio: test doppio buck → solo Pi → scheda relè (senza 12 V) → 12 V pompe.
-2. Primo impulso reale 0,5–1 s, una pompa alla volta.
-3. Test crash-safety relè: `sudo systemctl kill -s KILL irrigatore-daemon` → pompa deve spegnersi entro ~2-3 s (Restart=always). Se resta accesa → **watchdog hardware** (`/dev/watchdog`).
-4. Calibrazione portata reale.
-5. (Opzionale) pulsante on/off pulito: `dtoverlay=gpio-shutdown` + pulsante momentaneo tra pin 5 (GPIO3) e pin 6 (GND).
+**Da fare al rientro dalle vacanze (Fasi 6-7, hardware)** — dettagli in
+[upgrade-sensori.md](upgrade-sensori.md) §9:
+1. Acquisti (~75 €): 3 galleggianti, ADS1115, 3× DFRobot SEN0308, USB-UART 3,3 V per VE.Direct.
+2. Fase 6: galleggianti su GPIO 23/24/25, ntfy (drop-in con `NOTIFY_NTFY_TOPIC`),
+   meteo (coordinate in `programs.json`), cavo VE.Direct.
+3. Fase 7: I2C on, ADS1115, sensore pilota su pompa 2 (aromatiche), taratura, poi 3 zone.
+4. Test crash-safety relè ancora in sospeso: `sudo systemctl kill -s KILL irrigatore-daemon`
+   → pompa spenta entro ~2-3 s (Restart=always). Se resta accesa → **watchdog hardware** (`/dev/watchdog`).
+5. (Opzionale) pulsante on/off pulito: `dtoverlay=gpio-shutdown,gpio_pin=26` —
+   ⚠ **NON su GPIO3/pin 5 come indicato in passato: GPIO3 è l'SCL dell'I2C** e
+   collide con l'ADS1115. Su GPIO26 si perde il "wake da pulsante" (per riaccendere
+   da spento: stacca/riattacca corrente), lo spegnimento pulito resta.

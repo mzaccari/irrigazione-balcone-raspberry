@@ -19,15 +19,27 @@ I due processi si coordinano tramite file (nessun database, tutto ispezionabile)
 | File | Chi scrive | Contenuto |
 | --- | --- | --- |
 | `pumps.json` | (fisso) | Hardware: id pompa, GPIO, pin fisico |
-| `programs.json` | interfaccia | Programmi, capacita/portata serbatoi, opzioni |
-| `runtime/state.json` | demone | Stato live: pompe on/off, acqua, prossimi avvii, heartbeat |
+| `programs.json` | interfaccia | Programmi, serbatoi, opzioni + sezioni `sensors`/`weather`/`notify`/`power` |
+| `runtime/state.json` | demone | Stato live: pompe, acqua, sensori, batteria, decisioni |
 | `runtime/commands/` | interfaccia | Coda comandi manuali (un file per comando) |
-| `runtime/events.jsonl` | demone | Storico avvii/spegnimenti/avvisi |
+| `runtime/events.jsonl` | demone | Storico avvii/spegnimenti/avvisi/decisioni |
+| `runtime/weather.json` | thread meteo | Cache Open-Meteo del giorno (ET0, pioggia) |
+| `runtime/sensors.jsonl` | demone | Trend sensori ogni 15 min (umidita, galleggianti, batteria) |
 
 La cartella `runtime/` non e versionata (vedi `.gitignore`).
 
 Moduli di supporto: `scheduler.py` (logica pura di scheduling + acqua, con clock
 iniettabile), `store.py` (I/O atomico + coda), `clock.py`, `paths.py`.
+
+Moduli sensori (Fase 5, vedi `docs/upgrade-sensori.md` per il progetto completo):
+`sensors.py` (galleggianti + ADS1115 con mock), `decision.py` (motore decisionale
+puro: la dose programmata viene MODULATA da umidita x meteo x batteria, mai
+sostituita; ogni input guasto/assente = neutro), `weather.py` (Open-Meteo con
+cache), `notify.py` (ntfy con coda non bloccante, heartbeat giornaliero),
+`power.py` (telemetria Victron VE.Direct + stato batteria). Mock dei sensori:
+env `SENSOR_MOCK` (auto fuori Linux), come `PUMP_MOCK`. Tutte le sezioni nuove
+di `programs.json` nascono **disabilitate**: senza config il comportamento e
+identico al sistema base.
 
 ## Pin usati
 
@@ -83,9 +95,12 @@ Per l'avvio automatico all'accensione usa i servizi systemd
 - **Manuale**: accendi/spegni/impulso per prova; `STOP TUTTO` ferma subito.
 - **Programmi**: per ogni pompa, aggiungi programmi con data d'inizio, fine (o
   "per sempre"), uno o piu orari e durata. Valgono ogni giorno nell'intervallo.
-- **Serbatoi**: livello stimato, "Serbatoio riempito" per azzerare il conteggio,
-  configurazione di capacita e **portata** (con nota di calibrazione).
-- **Storico**: ultimi eventi (avvii, spegnimenti, salti per acqua bassa).
+- **Serbatoi**: livello stimato, "Serbatoio riempito" per azzerare il conteggio
+  (e sganciare il latch del galleggiante), capacita e **portata**.
+- **Sensori**: stato galleggianti, umidita per zona con **calibrazione live**
+  (cattura di raw secco/bagnato), ultima decisione dose con i motivi, meteo,
+  batteria/pannello, avvisi di configurazione, toggle "zona esposta alla pioggia".
+- **Storico**: ultimi eventi (avvii, spegnimenti, salti, decisioni dose).
 
 ### Nota sull'acqua
 

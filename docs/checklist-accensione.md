@@ -26,8 +26,12 @@ gpio=17,27,22=op,dh
 → i pin nascono **alti** (relè aperti) fin dal primo istante di boot.
 Backup del file originale: `config.txt.bak-20260705-213704`.
 
-*(Opzionale, da valutare con pulsante fisico: `dtoverlay=gpio-shutdown` per
-spegnimento/accensione pulita da un pulsantino tra pin 5 (GPIO3) e pin 6 (GND).)*
+*(Opzionale, da valutare con pulsante fisico: `dtoverlay=gpio-shutdown,gpio_pin=26`
+per lo spegnimento pulito da pulsantino tra GPIO26 (pin 37) e GND (pin 39).
+⚠ NON usare pin 5/GPIO3 come ipotizzato all'inizio: GPIO3 è l'**SCL dell'I2C**
+e serve all'ADS1115 dei sensori di umidità — vedi `docs/upgrade-sensori.md`.
+Con GPIO26 il pulsante spegne ma non riaccende: per riaccendere si stacca e
+riattacca la corrente.)*
 
 ## A. A freddo — tutto scollegato
 
@@ -88,6 +92,7 @@ Il demone tiene già i pin 17/27/22 alti (relè off): puoi collegare i segnali a
   l'alimentazione.
 - **Spegnere:** `sudo poweroff`, attendi che il **LED verde** smetta di
   lampeggiare, *poi* stacca. Il Pi non ha pulsante: per riaccenderlo si stacca e
-  riattacca la corrente (oppure pulsantino su pin 5–6).
+  riattacca la corrente (l'eventuale pulsantino di shutdown va su GPIO26, non su
+  pin 5: vedi nota al punto 0).
 - **Mai strappare la corrente** a Pi acceso: rischio di corruzione della microSD.
 - **Log dal vivo:** `journalctl -u irrigatore-daemon -f`
