@@ -43,9 +43,13 @@ def _remove_quiet(path: str | Path) -> None:
 
 def write_json_atomic(path: str | Path, data: Any) -> None:
     """Scrive `data` come JSON in modo atomico, con retry su PermissionError."""
+    write_text_atomic(path, json.dumps(data, indent=2, ensure_ascii=False))
+
+
+def write_text_atomic(path: str | Path, payload: str) -> None:
+    """Scrive testo in modo atomico (stesso schema temp+replace del JSON)."""
     target = Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
-    payload = json.dumps(data, indent=2, ensure_ascii=False)
 
     last_exc: Exception | None = None
     for attempt in range(_WRITE_RETRIES):
@@ -145,6 +149,24 @@ def append_event(events_path: str | Path, event: dict[str, Any]) -> None:
     line = json.dumps(event, ensure_ascii=False)
     with events_path.open("a", encoding="utf-8") as handle:
         handle.write(line + "\n")
+
+
+def trim_jsonl(path: str | Path, max_bytes: int, keep_lines: int) -> bool:
+    """Se il file JSONL supera `max_bytes`, tiene solo le ultime `keep_lines` righe.
+
+    Riscrittura atomica; qualunque errore -> False senza sollevare (e' una
+    manutenzione di cortesia, non deve mai fermare il demone).
+    """
+    target = Path(path)
+    try:
+        if not target.exists() or target.stat().st_size <= max_bytes:
+            return False
+        lines = target.read_text(encoding="utf-8").splitlines()
+        tail = lines[-max(1, int(keep_lines)):]
+        write_text_atomic(target, "\n".join(tail) + "\n")
+        return True
+    except OSError:
+        return False
 
 
 def read_events(events_path: str | Path, limit: int = 200) -> list[dict[str, Any]]:

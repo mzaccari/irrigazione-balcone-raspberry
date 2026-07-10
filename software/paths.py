@@ -21,3 +21,5 @@ STATE_JSON = RUNTIME_DIR / "state.json"
 COMMANDS_DIR = RUNTIME_DIR / "commands"
 REJECTED_DIR = COMMANDS_DIR / "rejected"
 EVENTS_JSONL = RUNTIME_DIR / "events.jsonl"
+WEATHER_JSON = RUNTIME_DIR / "weather.json"    # cache meteo (scritta dal thread meteo)
+SENSORS_JSONL = RUNTIME_DIR / "sensors.jsonl"  # trend sensori (umidita/galleggianti/batteria)
