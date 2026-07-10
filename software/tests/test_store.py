@@ -109,3 +109,20 @@ def test_written_json_is_utf8_readable(tmp_path):
     store.write_json_atomic(target, {"nota": "erogazione perpetua"})
     raw = target.read_text(encoding="utf-8")
     assert "erogazione perpetua" in json.loads(raw)["nota"]
+
+
+def test_trim_jsonl_keeps_tail_when_over_limit(tmp_path):
+    log = tmp_path / "sensors.jsonl"
+    for i in range(100):
+        store.append_event(log, {"n": i})
+    assert store.trim_jsonl(log, max_bytes=100, keep_lines=10) is True
+    events = store.read_events(log)
+    assert [e["n"] for e in events] == list(range(90, 100))
+
+
+def test_trim_jsonl_noop_under_limit_or_missing(tmp_path):
+    log = tmp_path / "sensors.jsonl"
+    assert store.trim_jsonl(log, max_bytes=100, keep_lines=10) is False  # assente
+    store.append_event(log, {"n": 1})
+    assert store.trim_jsonl(log, max_bytes=10_000, keep_lines=10) is False
+    assert [e["n"] for e in store.read_events(log)] == [1]
