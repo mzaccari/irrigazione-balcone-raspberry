@@ -337,6 +337,10 @@ def render_tanks(state: dict | None, alive: bool) -> None:
         st.subheader(pump.name)
         cols = st.columns([2, 1, 1.2])
         with cols[0]:
+            float_info = live.get("float") or {}
+            if float_info.get("empty_latched"):
+                st.error("**VUOTO (galleggiante)** — la pompa e bloccata finche non "
+                         "segnali il riempimento.")
             if water is not None and capacity > 0:
                 frac = max(0.0, min(1.0, water / capacity))
                 st.progress(frac, text=f"{water:.1f} / {capacity:.0f} L ({frac * 100:.0f}%)")
@@ -381,7 +385,172 @@ _EVENT_LABELS = {
     "riempito": "Serbatoio riempito",
     "comando_ignoto": "Comando ignoto",
     "pulse_invalido": "Impulso non valido",
+    "decisione_dose": "Decisione dose",
+    "saltato_umidita": "Saltato: terreno gia umido",
+    "saltato_meteo": "Saltato: pioggia prevista",
+    "saltato_batteria": "Saltato: batteria critica",
+    "saltato_serbatoio_vuoto": "Saltato: serbatoio vuoto",
+    "serbatoio_vuoto": "Galleggiante: serbatoio VUOTO",
+    "batteria_bassa": "Batteria bassa",
+    "config_avviso": "Avviso configurazione",
+    "lettura_live": "Lettura live sensori",
 }
+
+
+def render_sensors(state: dict | None, alive: bool) -> None:
+    """Pannello read-only di sensori/meteo/batteria + helper di calibrazione.
+
+    La UI non tocca MAI GPIO/I2C/seriale: il demone campiona e scrive
+    state.json, qui si legge e al massimo si accodano comandi (sensor_live)
+    o si salvano i punti di calibrazione in programs.json.
+    """
+    programs = load_programs()
+    pstate = (state or {}).get("pumps", {})
+
+    for warning in (state or {}).get("config_warnings") or []:
+        st.warning(f"Config: {warning}")
+
+    # --- Meteo e batteria (globali) ---
+    cols = st.columns(2)
+    with cols[0]:
+        st.markdown("**Meteo (Open-Meteo)**")
+        weather_state = (state or {}).get("weather")
+        if isinstance(weather_state, dict):
+            st.caption(
+                f"{weather_state.get('date', '?')} · ET0 {weather_state.get('et0_mm', '?')} mm · "
+                f"pioggia {weather_state.get('rain_mm', '?')} mm "
+                f"(prob {weather_state.get('rain_prob', '?')}%) · "
+                f"Tmax {weather_state.get('tmax_c', '?')} °C"
+            )
+        else:
+            st.caption("Disabilitato o nessun dato (vedi `weather` in programs.json).")
+    with cols[1]:
+        st.markdown("**Batteria / pannello (VE.Direct)**")
+        power_state = (state or {}).get("power")
+        if isinstance(power_state, dict):
+            volt = power_state.get("battery_v")
+            panel = power_state.get("panel_w")
+            batt_state = power_state.get("state", "?")
+            volt_txt = f"{volt:.2f} V" if isinstance(volt, (int, float)) else "nessun dato"
+            panel_txt = f" · pannello {panel:.0f} W" if isinstance(panel, (int, float)) else ""
+            charge = power_state.get("charge_state")
+            charge_txt = f" · {charge}" if charge else ""
+            line = f"{volt_txt}{panel_txt}{charge_txt} · stato: **{batt_state}**"
+            if batt_state in ("bassa", "critica"):
+                st.error(line)
+            else:
+                st.caption(line)
+        else:
+            st.caption("Disabilitato (vedi `power` in programs.json).")
+
+    # --- Lettura live per calibrazione ---
+    live_until = (state or {}).get("live_sampling_until")
+    live_on = False
+    if live_until:
+        try:
+            until = datetime.fromisoformat(live_until)
+            live_on = datetime.now(until.tzinfo) < until
+        except (ValueError, TypeError):
+            live_on = False
+    cols = st.columns([1.4, 3])
+    with cols[0]:
+        if st.button("Avvia lettura live (60 s)", disabled=not alive,
+                     use_container_width=True):
+            send_and_refresh({"type": "sensor_live", "seconds": 60},
+                             "Lettura live avviata")
+    with cols[1]:
+        if live_on:
+            st.info(f"Lettura live attiva fino alle {fmt_dt(live_until)}: i valori raw "
+                    "si aggiornano ad ogni tick, premi 🔄 Aggiorna per rileggerli.")
+        else:
+            st.caption("Per calibrare: avvia la lettura live, metti la sonda in aria "
+                       "(secco) o in un bicchiere d'acqua (bagnato) e cattura il raw.")
+
+    st.divider()
+
+    # --- Per pompa: galleggiante, umidita, ultima decisione ---
+    for pump in hardware_pumps():
+        live = pstate.get(pump.id, {})
+        entry = pump_entry(programs, pump.id)
+        sensors_cfg = entry.setdefault("sensors", {})
+        st.subheader(pump.name)
+
+        info_cols = st.columns([1.4, 1])
+        with info_cols[0]:
+            float_info = live.get("float")
+            if isinstance(float_info, dict):
+                if float_info.get("empty_latched"):
+                    st.error("Galleggiante: **serbatoio VUOTO** (latch attivo — si sblocca "
+                             "con 'Serbatoio riempito' nel tab Serbatoi)")
+                elif float_info.get("water_present") is False:
+                    st.warning("Galleggiante: livello basso (debounce in corso...)")
+                elif float_info.get("water_present") is None:
+                    st.warning("Galleggiante configurato ma lettura non disponibile")
+                else:
+                    st.success(f"Galleggiante ok (GPIO{float_info.get('gpio')}): acqua presente")
+            else:
+                st.caption("Nessun galleggiante configurato (`sensors.float` in programs.json).")
+        with info_cols[1]:
+            exposed = st.toggle(
+                "Zona esposta alla pioggia", value=bool(sensors_cfg.get("rain_exposed", False)),
+                key=f"rain-{pump.id}",
+                help="Se attiva, il meteo puo saltare l'irrigazione quando e prevista pioggia.",
+            )
+            if exposed != bool(sensors_cfg.get("rain_exposed", False)):
+                sensors_cfg["rain_exposed"] = exposed
+                save_programs(programs)
+                st.rerun()
+
+        moisture_live = live.get("moisture") or []
+        moisture_cfg = sensors_cfg.get("moisture") or []
+        if not moisture_cfg and not moisture_live:
+            st.caption("Nessun sensore di umidita configurato (`sensors.moisture`).")
+        for reading in moisture_live:
+            sensor_id = reading.get("id", "?")
+            raw = reading.get("raw")
+            percent = reading.get("percent")
+            note = reading.get("note")
+            row = st.columns([2, 1, 1, 1])
+            with row[0]:
+                if percent is not None:
+                    st.progress(max(0.0, min(1.0, percent / 100.0)),
+                                text=f"{sensor_id}: {percent:.0f}% (raw {raw})")
+                else:
+                    detail = f" — {note}" if note else ""
+                    st.warning(f"{sensor_id}: non utilizzabile (raw {raw}){detail}")
+                st.caption(f"Ultima lettura: {fmt_dt(reading.get('at'))}")
+            cfg_item = next((c for c in moisture_cfg
+                             if isinstance(c, dict) and c.get("id") == sensor_id), None)
+            with row[1]:
+                if st.button("Usa come SECCO", key=f"dry-{pump.id}-{sensor_id}",
+                             disabled=raw is None or cfg_item is None,
+                             use_container_width=True):
+                    cfg_item["raw_dry"] = int(raw)
+                    save_programs(programs)
+                    st.success(f"{sensor_id}: raw_dry = {raw}")
+                    st.rerun()
+            with row[2]:
+                if st.button("Usa come BAGNATO", key=f"wet-{pump.id}-{sensor_id}",
+                             disabled=raw is None or cfg_item is None,
+                             use_container_width=True):
+                    cfg_item["raw_wet"] = int(raw)
+                    save_programs(programs)
+                    st.success(f"{sensor_id}: raw_wet = {raw}")
+                    st.rerun()
+            with row[3]:
+                if cfg_item is not None:
+                    st.caption(f"secco {cfg_item.get('raw_dry', 0)} · "
+                               f"bagnato {cfg_item.get('raw_wet', 0)}")
+
+        last_decision = live.get("last_decision")
+        if isinstance(last_decision, dict):
+            reasons = "; ".join(last_decision.get("reasons") or []) or "dose piena"
+            st.caption(
+                f"Ultima decisione ({fmt_dt(last_decision.get('at'), with_date=True)}): "
+                f"×{last_decision.get('multiplier')} → "
+                f"{last_decision.get('effective_s')}s su {last_decision.get('base_s')}s — {reasons}"
+            )
+        st.divider()
 
 
 def render_history() -> None:
@@ -410,8 +579,8 @@ alive, age = daemon_status(state)
 
 render_header(state, alive, age)
 
-tab_manuale, tab_programmi, tab_serbatoi, tab_storico = st.tabs(
-    ["Manuale", "Programmi", "Serbatoi", "Storico"]
+tab_manuale, tab_programmi, tab_serbatoi, tab_sensori, tab_storico = st.tabs(
+    ["Manuale", "Programmi", "Serbatoi", "Sensori", "Storico"]
 )
 with tab_manuale:
     render_manual(state, alive)
@@ -419,5 +588,7 @@ with tab_programmi:
     render_programs(state)
 with tab_serbatoi:
     render_tanks(state, alive)
+with tab_sensori:
+    render_sensors(state, alive)
 with tab_storico:
     render_history()
