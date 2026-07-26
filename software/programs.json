@@ -6,13 +6,13 @@
   },
   "weather": {
     "enabled": false,
-    "latitude": null,
-    "longitude": null,
+    "latitude": 45.64,
+    "longitude": 13.8,
     "rain_skip_mm": 5.0,
-    "rain_prob_min": 80,
-    "et0_low": 2.0,
-    "et0_high": 5.0,
-    "fetch_hour": "05:30",
+    "rain_prob_min": 90,
+    "et0_low": 4.5,
+    "et0_high": 6.5,
+    "fetch_hour": "04:00",
     "max_age_hours": 30
   },
   "notify": {
@@ -39,8 +39,8 @@
   },
   "pumps": {
     "pompa_1": {
-      "tank_liters": 25,
-      "flow_lph": 10,
+      "tank_liters": 30.0,
+      "flow_lph": 10.0,
       "programs": [
         {
           "id": "estate",
@@ -50,6 +50,26 @@
             "06:30",
             "20:00"
           ]
+        },
+        {
+          "id": "a73777a1",
+          "enabled": true,
+          "start_date": "2026-07-16",
+          "end_date": null,
+          "times": [
+            "20:40"
+          ],
+          "duration_s": 180
+        },
+        {
+          "id": "canicola",
+          "enabled": true,
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-04",
+          "times": [
+            "04:30"
+          ],
+          "duration_s": 180
         }
       ],
       "sensors": {
@@ -57,17 +77,27 @@
       }
     },
     "pompa_2": {
-      "tank_liters": 25,
-      "flow_lph": 12,
+      "tank_liters": 25.0,
+      "flow_lph": 12.0,
       "programs": [
         {
           "id": "estate",
           "start_date": "2026-07-07",
-          "duration_s": 300,
+          "duration_s": 360,
           "times": [
             "06:45",
             "20:15"
           ]
+        },
+        {
+          "id": "canicola",
+          "enabled": true,
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-04",
+          "times": [
+            "05:00"
+          ],
+          "duration_s": 120
         }
       ],
       "sensors": {
@@ -75,22 +105,42 @@
       }
     },
     "pompa_3": {
-      "tank_liters": 30,
-      "flow_lph": 10,
+      "tank_liters": 25.0,
+      "flow_lph": 10.0,
       "programs": [
         {
-          "id": "d7e13d8b",
+          "id": "08bd6b1d",
           "enabled": true,
-          "start_date": "2026-07-08",
+          "start_date": "2026-07-20",
+          "end_date": null,
+          "times": [
+            "21:20"
+          ],
+          "duration_s": 420
+        },
+        {
+          "id": "mattina",
+          "enabled": true,
+          "start_date": "2026-07-27",
           "end_date": null,
           "times": [
             "07:00"
           ],
-          "duration_s": 360
+          "duration_s": 300
+        },
+        {
+          "id": "canicola",
+          "enabled": true,
+          "start_date": "2026-08-01",
+          "end_date": "2026-08-04",
+          "times": [
+            "04:45"
+          ],
+          "duration_s": 180
         }
       ],
       "sensors": {
-        "rain_exposed": false
+        "rain_exposed": true
       }
     }
   }

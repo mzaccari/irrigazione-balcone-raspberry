@@ -50,25 +50,63 @@ sudo poweroff                                          # spegni (poi serve stacc
 PUMP_MOCK=1 .venv/bin/python -m pytest software -q      # test (dalla dir ~/irrigatore)
 ```
 
-Ridistribuire il codice dopo modifiche locali (dal PC di sviluppo):
+Ridistribuire il codice dopo modifiche locali (dal PC di sviluppo, **da Git Bash**):
 ```bash
 git archive --format=tar <branch> | ssh mzaccari@192.168.178.39 'tar -xf - -C ~/irrigatore'
 sudo systemctl restart irrigatore-daemon irrigatore-web   # sul Pi, dopo il redeploy
 ```
 
-> ⚠ **Il deploy via `git archive` SOVRASCRIVE anche `software/programs.json` sul Pi.**
-> Se sul Pi la config è stata modificata dalla UI (programmi, portate, livelli...),
-> PRIMA del deploy ricattura la config live nel repo:
-> `scp mzaccari@192.168.178.39:~/irrigatore/software/programs.json software/` → commit → poi deploy.
-> (`runtime/` invece è al sicuro: non è versionato e l'archivio non lo contiene.)
+> ⚠ **In PowerShell quel comando non funziona**: PowerShell 5.1 corrompe gli stream binari
+> nelle pipe e l'archivio arriva danneggiato. Usare Git Bash, oppure la variante in due passi:
+> ```powershell
+> git archive --format=tar -o $env:TEMP\deploy.tar <branch>
+> scp $env:TEMP\deploy.tar mzaccari@192.168.178.39:~/
+> ssh mzaccari@192.168.178.39 'tar -xf ~/deploy.tar -C ~/irrigatore; rm ~/deploy.tar'
+> ```
+
+### Codice e config viaggiano separati
+
+`software/programs.json` è marcato `export-ignore` in [`.gitattributes`](../.gitattributes):
+**`git archive` non lo include più**, quindi nessun deploy di codice può sovrascrivere la
+config viva sul Pi (che è quella scritta dalla UI: programmi, portate, capacità serbatoi).
+
+> **Regola unica: codice via `git archive`, config via `scp` esplicito.**
+
+- **Pi → repo** (ricatturare la config viva prima di lavorarci, poi commit):
+  ```bash
+  scp mzaccari@192.168.178.39:~/irrigatore/software/programs.json software/
+  ```
+- **repo → Pi** (spingere una config modificata a mano — ferma prima la UI, vedi sotto):
+  ```bash
+  scp software/programs.json mzaccari@192.168.178.39:~/irrigatore/software/programs.json
+  ```
+
+⚠ **Prima di scrivere `programs.json` sul Pi ferma la UI** (`sudo systemctl stop irrigatore-web`)
+e chiudi il browser su `:8501`. Streamlit è l'unico processo che scrive quel file e lo fa in
+read-modify-write dell'intero dict: una scheda rimasta aperta, al primo click, lo riscrive da
+uno stato in memoria vecchio e annulla la modifica. Il demone invece lo legge soltanto, e
+ricarica da solo al cambio di `mtime` — non serve riavviarlo.
+
+⚠ **Installazione da zero**: un Pi nuovo non riceve `programs.json` dall'archivio. Va copiato a
+mano la prima volta, altrimenti il demone parte ma non ha pompe da comandare.
+
+(`runtime/` è al sicuro in ogni caso: non è versionato e l'archivio non lo contiene.)
+
+### Scaricare log e stato dal Pi
+
+```powershell
+.\scripts\pull-pi-logs.ps1
+```
+Archivia `runtime/`, `programs.json`, `pi-temp.csv` e i journal dei servizi in
+`~\Documents\irrigatore-logs\<data>\` (fuori dal repo: sono dati runtime che crescono).
 
 ## Hardware — mappa GPIO
 
 | Pompa | GPIO BCM | Pin fisico | Serbatoio |
 |---|---:|---:|---:|
-| Pompa 1 "Piante Grandi" | 17 | 11 | 25 L |
+| Pompa 1 "Piante Grandi" | 17 | 11 | 30 L |
 | Pompa 2 "Piante aromatiche" | 27 | 13 | 25 L |
-| Pompa 3 "oleandri e ibisco" | 22 | 15 | 30 L |
+| Pompa 3 "oleandri e ibisco" | 22 | 15 | 25 L |
 
 Relè **active-low**: GPIO basso = relè chiuso = pompa accesa. Portate **calibrate coi
 gocciolatori: ~10–12 L/h** (i 600 nominali valgono solo a tubo aperto).

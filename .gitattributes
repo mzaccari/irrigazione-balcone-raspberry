@@ -1,3 +1,8 @@
 # File destinati a Linux (Raspberry Pi): sempre LF, mai CRLF
 *.sh text eol=lf
 *.service text eol=lf
+
+# La config viva sta sul Pi (la scrive la UI Streamlit): il file resta versionato
+# come registro storico, ma `git archive` NON deve piu' spedirlo e sovrascriverla.
+# Regola: codice via `git archive`, config via `scp` esplicito.
+software/programs.json export-ignore
