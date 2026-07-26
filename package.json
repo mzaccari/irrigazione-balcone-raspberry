@@ -5,7 +5,9 @@
   "description": "Progetto per controllare tre pompe 12 V tramite Raspberry Pi 4 e modulo relè 8 canali.",
   "type": "module",
   "scripts": {
-    "render-schematic": "node scripts/render_balcony_irrigation_schematic.mjs"
+    "render-schematic": "node scripts/render_balcony_irrigation_schematic.mjs",
+    "render-schematic:pi": "node scripts/render_balcony_irrigation_schematic.mjs pi",
+    "render-schematic:esp32": "node scripts/render_balcony_irrigation_schematic.mjs esp32"
   },
   "devDependencies": {
     "playwright": "^1.48.0"

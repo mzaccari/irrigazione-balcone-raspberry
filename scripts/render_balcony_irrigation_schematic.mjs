@@ -2,16 +2,35 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium } from "playwright";
 
-const svgPath = path.resolve("outputs", "balcony-irrigation-schematic", "schema_elettrico_irrigazione_balcone.svg");
-const outputDir = path.dirname(svgPath);
-const pdfPath = path.join(outputDir, "schema_elettrico_irrigazione_balcone.pdf");
-const pngPath = path.join(outputDir, "schema_elettrico_irrigazione_balcone.png");
+// Ogni schema e' un SVG a mano in outputs/balcony-irrigation-schematic/.
+// Uso: npm run render-schematic [pi|esp32]  (default: tutti)
+const DIAGRAMS = {
+  pi: "schema_elettrico_irrigazione_balcone",
+  esp32: "schema_elettrico_nodo_esp32",
+};
 
-const svg = await fs.readFile(svgPath, "utf8");
+const outputDir = path.resolve("outputs", "balcony-irrigation-schematic");
+const requested = process.argv.slice(2);
+const keys = requested.length ? requested : Object.keys(DIAGRAMS);
+
+const unknown = keys.filter((key) => !DIAGRAMS[key]);
+if (unknown.length) {
+  console.error(`Schema sconosciuto: ${unknown.join(", ")}. Validi: ${Object.keys(DIAGRAMS).join(", ")}`);
+  process.exit(1);
+}
+
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width: 1600, height: 1100 }, deviceScaleFactor: 2 });
 
-await page.setContent(`<!doctype html>
+for (const key of keys) {
+  const base = DIAGRAMS[key];
+  const svgPath = path.join(outputDir, `${base}.svg`);
+  const pdfPath = path.join(outputDir, `${base}.pdf`);
+  const pngPath = path.join(outputDir, `${base}.png`);
+
+  const svg = await fs.readFile(svgPath, "utf8");
+  const page = await browser.newPage({ viewport: { width: 1600, height: 1100 }, deviceScaleFactor: 2 });
+
+  await page.setContent(`<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -25,16 +44,19 @@ await page.setContent(`<!doctype html>
   <body>${svg}</body>
 </html>`);
 
-await page.pdf({
-  path: pdfPath,
-  format: "A3",
-  landscape: true,
-  printBackground: true,
-  margin: { top: "10mm", bottom: "10mm", left: "10mm", right: "10mm" },
-});
+  await page.pdf({
+    path: pdfPath,
+    format: "A3",
+    landscape: true,
+    printBackground: true,
+    margin: { top: "10mm", bottom: "10mm", left: "10mm", right: "10mm" },
+  });
 
-await page.screenshot({ path: pngPath, fullPage: true });
+  await page.screenshot({ path: pngPath, fullPage: true });
+  await page.close();
+
+  console.log(pdfPath);
+  console.log(pngPath);
+}
+
 await browser.close();
-
-console.log(pdfPath);
-console.log(pngPath);

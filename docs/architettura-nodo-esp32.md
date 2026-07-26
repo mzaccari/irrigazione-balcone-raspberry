@@ -186,28 +186,129 @@ funziona.
 | Voce | Prima (Fase 6) | Dopo | Δ |
 |---|---|---|---|
 | ADS1115 su I2C | ~3 € | non serve, ADC1 integrato | −3 € |
-| Cavo VE.Direct **USB** | ~30 € | cavo nudo / pigtail JST-PH 2 mm | −20 € |
+| Cavo VE.Direct **USB** | ~30 € | cavo Victron 0,9 m tagliato a metà | −20 € |
 | ESP32-DevKitC-32UE 38 pin | — | ~8 € | +8 € |
 | Antenna 2,4 GHz + pigtail IPEX→SMA | — | ~3 € | +3 € |
-| MOSFET per sensori | — | ~1 € | +1 € |
-| 3 resistenze 10 kΩ (pull-up relè) | — | ~0,3 € | +0,3 € |
+| MOSFET AO3401A + 100 kΩ | — | ~1 € | +1 € |
+| 2 resistenze partitore VE.Direct (se serve) | — | ~0,2 € | +0,2 € |
+| 3 resistenze 10 kΩ (pull-up relè, **opzionali**) | — | ~0,3 € | +0,3 € |
 | Galleggianti ×3, capacitivi ×3 | invariati | invariati | — |
 
 Il pulsante di shutdown su GPIO26 **sparisce**: senza filesystem non c'è niente da smontare.
+
+## Schema elettrico
+
+**[schema_elettrico_nodo_esp32.svg](../outputs/balcony-irrigation-schematic/schema_elettrico_nodo_esp32.svg)**
+— PDF e PNG accanto all'SVG, rigenerabili con:
+
+```bash
+npm run render-schematic:esp32
+```
+
+Affianca lo schema del Pi senza sostituirlo: quello resta il documento dell'impianto **in
+esercizio** finché il nodo non è provato sul campo.
 
 ## Vincoli elettrici da non scoprire dopo
 
 - **ADC2 inutilizzabile con WiFi attivo** sull'ESP32 classico → i tre capacitivi vanno su
   ADC1 (GPIO32-39). Per questo WROOM-32 e non C3 supermini: 3 pompe + 3 galleggianti +
   3 umidità + 1 RX VE.Direct = 10 I/O.
-- **Livello logico VE.Direct da misurare col tester** prima di collegarlo. Porta non
-  isolata, livelli variabili per modello, su alcuni il TX idla vicino ai 5 V. Partitore da
-  due resistenze se non sei a 3,3 V. Massa comune non è un problema: stesso 12 V.
-- **Sensori capacitivi alimentati da GPIO via MOSFET**, energizzati solo durante la
-  lettura: evita l'elettrolisi che se li mangia in un paio di stagioni.
 - ⚠ **Il rail 5 V ha già ucciso un Pi Zero 2 W** su questo impianto (vedi
   [README](../README.md), revisione doppio buck). Il nodo va sullo stesso rail: prima di
   dargli tensione, multimetro, come da [checklist-accensione.md](checklist-accensione.md).
+
+### MOSFET per l'alimentazione dei sensori
+
+**Topologia high-side, P-channel.** Va commutato il positivo, non la massa: interrompendo il
+GND l'uscita analogica del sensore resta senza riferimento e può iniettare corrente nel pin
+ADC attraverso la linea di segnale.
+
+**Componente: AO3401A** (SOT-23). Equivalenti: SI2301, DMP2215L. Il criterio che conta è uno
+solo: **deve essere logic-level**. Col source a 3,3 V il massimo Vgs ottenibile è −3,3 V;
+l'AO3401A ha Vgs(th) tra −0,45 e −1,0 V e conduce pienamente. **IRF9540 e BS250, suggeriti
+ovunque, hanno soglie fino a −3,5 V: a 3,3 V restano semi-accesi e scaldano.**
+
+```
+3V3 ──┬─────────── S (source)
+      │
+     100k
+      │
+GPIO22 ───────── G (gate)
+                 D (drain) ──── VCC dei 3 sensori
+```
+
+La 100 kΩ gate-source tiene il MOSFET **spento** quando GPIO22 è in alta impedenza, cioè
+durante il boot. Logica invertita: GPIO22 basso = sensori alimentati (`inverted: true` in
+ESPHome). Carico reale ~15 mA contro i 4 A del componente.
+
+Due conseguenze **non elettriche** che derivano da questa scelta:
+
+1. I capacitivi hanno un oscillatore a 555 con filtro RC: servono **~1 s di assestamento**
+   dopo l'accensione. La sequenza accendi → attendi → oversampling → spegni deve essere
+   **atomica sul nodo**, non orchestrata via MQTT. Quindi il nodo pubblica le letture di
+   umidità su sua iniziativa ogni N minuti e `RemoteAdc.read_single()` restituisce l'ultimo
+   valore retained: niente latenza e niente sequenze distribuite su un link a −73 dBm.
+2. L'uscita arriva a ~3 V su alimentazione 3,3 V → in ESPHome serve `attenuation: 12db`. La
+   zona alta della scala ADC dell'ESP32 non è lineare, **ma non importa**: la taratura
+   `raw_dry`/`raw_wet` di [upgrade-sensori.md](upgrade-sensori.md) è relativa per sensore e
+   assorbe la non linearità. È il vantaggio nascosto di quella scelta.
+
+### Pull-up sui relè: rettifica
+
+Una versione precedente di questo documento li dava per **necessari**. Rifacendo l'analisi
+del circuito d'ingresso: sulla scheda in uso **probabilmente non lo sono**.
+
+Sulle schede relè optoisolate, IN va al catodo del LED dell'optoaccoppiatore e l'anodo sta a
+VCC. Con IN flottante non circola corrente, LED spento, relè aperto: la finestra di boot è
+già intrinsecamente sicura — **a condizione che VCC del lato opto venga dal 3V3 della devkit
+stessa**, come oggi dal Pi, così le due tensioni salgono insieme.
+
+Il caso in cui saltano davvero è un altro: se VCC del lato opto arrivasse da
+un'alimentazione **diversa** che sale prima dell'ESP32, IN si troverebbe a 0 V attraverso i
+diodi di protezione del micro spento, il LED condurrebbe e **il relè chiuderebbe**. Non è la
+configurazione attuale, ed è un ottimo motivo per non spostare mai quel VCC sul Buck 2.
+
+**Verifica in 30 secondi:** multimetro in prova diodi, rosso su VCC e nero su IN1. Se legge
+~1,1 V la topologia è quella descritta e i pull-up sono ridondanti. Se non legge nulla in
+entrambi i versi, la scheda ha uno stadio diverso e servono.
+
+Se si montano comunque — 30 centesimi di assicurazione — vanno **all'estremità della scheda
+relè, non dell'ESP32**: un filo che si stacca lascia comunque l'ingresso tenuto alto, stessa
+logica del galleggiante che si legge "vuoto" a filo rotto. Montaggio su basettina millefori
+intermedia, senza saldare nulla sulla scheda relè, che resta sostituibile.
+
+### Cavo VE.Direct
+
+**Connettore JST-PH passo 2,0 mm, 4 poli.** Prendere il **cavo Victron originale da 0,9 m**
+(ASS030530209, ~10 €) e **tagliarlo a metà**: due connettori con la ritenzione giusta, più un
+ricambio. I pigtail generici da 2 € spesso ballano nella sede, e su un impianto non
+presidiato all'aperto la vibrazione del connettore è un guasto che arriva a mesi di distanza.
+
+**Si collegano due fili soli: TX del Victron e GND.** Non collegare RX (non gli si mandano
+comandi) e **non collegare il pin +5 V**: è un'uscita a corrente limitata inutile qui, che
+creerebbe un secondo percorso di alimentazione verso un nodo già alimentato dal buck.
+
+**Non fidarsi dell'ordine dei pin da nessuno schema, incluso questo**: varia tra modelli e un
+errore costa l'ESP32. Con MPPT alimentato:
+
+1. GND = il pin in continuità col negativo batteria
+2. +5 V = il pin fermo a ~5 V — resta scollegato
+3. TX = il pin alto a riposo che scende brevemente ogni secondo
+
+Sul terzo si **legge il valore di riposo**, che decide il collegamento:
+
+| TX misurato | Cosa fare |
+|---|---|
+| ~3,3 V | filo diretto su GPIO16 |
+| ~5 V | partitore 10 kΩ serie + 20 kΩ verso GND → 3,33 V |
+
+⚠ **Non montare il partitore "per sicurezza" senza aver misurato**: su una sorgente già a
+3,3 V porta a 2,2 V, sotto la soglia VIH dell'ESP32 (2,475 V), e la seriale non aggancia.
+È l'errore in cui si cade proprio cercando di essere prudenti.
+
+Il resto: **19200 baud, 8N1**, il Victron trasmette un blocco di testo al secondo senza che
+gli venga chiesto niente. Interfaccia **non isolata** → massa comune col negativo batteria,
+che c'è già. Cavo corto e lontano dai cavi pompa a 12 V, gli unici carichi induttivi.
 
 ## Bilancio energetico
 

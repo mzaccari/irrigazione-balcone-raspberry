@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1357" viewBox="0 0 1920 1357">
+  <defs>
+    <style>
+      .title { font: 700 34px Arial, sans-serif; fill: #12312c; }
+      .subtitle { font: 400 18px Arial, sans-serif; fill: #35534d; }
+      .section { font: 700 22px Arial, sans-serif; fill: #ffffff; }
+      .label { font: 700 16px Arial, sans-serif; fill: #17352f; }
+      .small { font: 400 14px Arial, sans-serif; fill: #17352f; }
+      .tiny { font: 400 12px Arial, sans-serif; fill: #17352f; }
+      .warn { font: 700 14px Arial, sans-serif; fill: #8a2a00; }
+      .frame { fill: #ffffff; stroke: #d7e2df; stroke-width: 2; }
+      .logicBox { fill: #f7fbfa; stroke: #2d6a5f; stroke-width: 3; rx: 14; }
+      .logicHeader { fill: #2d6a5f; rx: 12; }
+      .powerBox { fill: #fff9f1; stroke: #b56b1f; stroke-width: 3; rx: 14; }
+      .powerHeader { fill: #b56b1f; rx: 12; }
+      .houseBox { fill: #f6f4fd; stroke: #5b4bbd; stroke-width: 3; rx: 14; }
+      .houseHeader { fill: #5b4bbd; rx: 12; }
+      .component { fill: #f0f7f5; stroke: #2d6a5f; stroke-width: 2; rx: 8; }
+      .powerComponent { fill: #fffdf8; stroke: #b56b1f; stroke-width: 2; rx: 8; }
+      .sensorComponent { fill: #f4fbf1; stroke: #4a8a36; stroke-width: 2; rx: 8; }
+      .houseComponent { fill: #fbfaff; stroke: #5b4bbd; stroke-width: 2; rx: 8; }
+      .neutralComponent { fill: #ffffff; stroke: #7b8b87; stroke-width: 2; rx: 8; }
+      .safetyComponent { fill: #fff7ed; stroke: #b56b1f; stroke-width: 2; rx: 8; }
+      .pos { stroke: #c62828; stroke-width: 4; fill: none; marker-end: url(#arrowRed); }
+      .neg { stroke: #202020; stroke-width: 4; fill: none; marker-end: url(#arrowBlack); }
+      .gndRef { stroke: #202020; stroke-width: 3; stroke-dasharray: 8 8; fill: none; marker-end: url(#arrowBlack); }
+      .signal { stroke: #1565c0; stroke-width: 3; fill: none; marker-end: url(#arrowBlue); }
+      .sw3v3 { stroke: #2e7d32; stroke-width: 3; fill: none; marker-end: url(#arrowGreen); }
+      .vedirect { stroke: #00838f; stroke-width: 3; stroke-dasharray: 10 6; fill: none; marker-end: url(#arrowTeal); }
+      .fivev { stroke: #f57c00; stroke-width: 4; fill: none; marker-end: url(#arrowOrange); }
+      .radio { stroke: #5b4bbd; stroke-width: 3; stroke-dasharray: 4 7; fill: none; marker-end: url(#arrowViolet); }
+      .coax { stroke: #7b8b87; stroke-width: 3; fill: none; }
+      .busText { font: 700 14px Arial, sans-serif; fill: #ffffff; }
+    </style>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#c62828"/>
+    </marker>
+    <marker id="arrowBlack" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#202020"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1565c0"/>
+    </marker>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#2e7d32"/>
+    </marker>
+    <marker id="arrowTeal" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#00838f"/>
+    </marker>
+    <marker id="arrowOrange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#f57c00"/>
+    </marker>
+    <marker id="arrowViolet" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5b4bbd"/>
+    </marker>
+  </defs>
+
+  <rect width="1920" height="1357" fill="#ffffff"/>
+  <rect x="30" y="20" width="1860" height="1310" class="frame"/>
+
+  <text x="60" y="62" class="title">Irrigazione balcone - schema elettrico nodo ESP32 di campo</text>
+  <text x="60" y="92" class="subtitle">Il Pi 4 resta in casa e decide. Il nodo esegue e protegge. Potenza pompe sempre separata nel box potenza. Revisione 2026-07-26.</text>
+
+  <!-- Legenda -->
+  <rect x="1355" y="35" width="535" height="140" class="neutralComponent"/>
+  <text x="1375" y="62" class="label">Legenda linee</text>
+  <line x1="1375" y1="85" x2="1455" y2="85" class="pos"/>
+  <text x="1468" y="90" class="small">+12V potenza</text>
+  <line x1="1375" y1="112" x2="1455" y2="112" class="neg"/>
+  <text x="1468" y="117" class="small">GND / ritorno potenza</text>
+  <line x1="1375" y1="139" x2="1455" y2="139" class="signal"/>
+  <text x="1468" y="144" class="small">GPIO segnale 3.3V</text>
+  <line x1="1640" y1="85" x2="1720" y2="85" class="fivev"/>
+  <text x="1733" y="90" class="small">5V da buck</text>
+  <line x1="1640" y1="112" x2="1720" y2="112" class="vedirect"/>
+  <text x="1733" y="117" class="small">VE.Direct (solo TX)</text>
+  <line x1="1640" y1="139" x2="1720" y2="139" class="radio"/>
+  <text x="1733" y="144" class="small">WiFi / MQTT</text>
+
+  <!-- ENERGIA -->
+  <rect x="60" y="150" width="560" height="290" class="logicBox"/>
+  <rect x="60" y="150" width="560" height="45" class="logicHeader"/>
+  <text x="84" y="180" class="section">Alimentazione solare / batteria</text>
+
+  <rect x="95" y="215" width="160" height="72" class="component"/>
+  <text x="132" y="244" class="label">Pannello</text>
+  <text x="136" y="267" class="small">50-100W</text>
+
+  <rect x="345" y="215" width="200" height="72" class="component"/>
+  <text x="398" y="244" class="label">MPPT Victron</text>
+  <text x="392" y="267" class="small">75/10 BlueSolar</text>
+
+  <rect x="205" y="330" width="240" height="78" class="component"/>
+  <text x="250" y="360" class="label">Batteria LiFePO4</text>
+  <text x="246" y="383" class="small">12.8V 20Ah, BMS</text>
+
+  <path d="M255 251 H345" class="pos"/>
+  <path d="M445 287 V330" class="pos"/>
+  <path d="M325 330 V307 H345" class="neg"/>
+  <text x="455" y="318" class="tiny">fusibile 15A</text>
+
+  <!-- CASA -->
+  <rect x="640" y="150" width="250" height="185" class="houseBox"/>
+  <rect x="640" y="150" width="250" height="42" class="houseHeader"/>
+  <text x="662" y="179" class="section">CASA - 230V</text>
+  <text x="662" y="217" class="label">Raspberry Pi 4</text>
+  <text x="662" y="240" class="small">il cervello</text>
+  <text x="662" y="264" class="tiny">demone + decision + ET0</text>
+  <text x="662" y="284" class="tiny">Streamlit + notifiche ntfy</text>
+  <text x="662" y="304" class="tiny">broker MQTT Mosquitto</text>
+  <text x="662" y="324" class="tiny">Home Assistant / clima</text>
+
+  <!-- Antenna -->
+  <rect x="640" y="390" width="250" height="62" class="neutralComponent"/>
+  <text x="662" y="416" class="label">Antenna 2.4 GHz esterna</text>
+  <text x="662" y="438" class="tiny">montata FUORI dal contenitore IP65</text>
+  <path d="M765 390 V337" class="radio"/>
+
+  <!-- BOX POTENZA -->
+  <rect x="900" y="185" width="990" height="800" class="powerBox"/>
+  <rect x="900" y="185" width="990" height="45" class="powerHeader"/>
+  <text x="925" y="215" class="section">BOX POTENZA 12V - fusibili, rele, pompe</text>
+
+  <rect x="950" y="275" width="175" height="70" class="powerComponent"/>
+  <text x="994" y="304" class="label">Fusibile</text>
+  <text x="972" y="327" class="small">principale 10-15A</text>
+
+  <rect x="1180" y="275" width="175" height="70" class="powerComponent"/>
+  <text x="1222" y="304" class="label">Sezionatore</text>
+  <text x="1245" y="327" class="small">12V DC</text>
+
+  <rect x="1410" y="275" width="205" height="70" class="powerComponent"/>
+  <text x="1469" y="304" class="label">Bus +12V</text>
+  <text x="1445" y="327" class="small">distribuzione positiva</text>
+
+  <rect x="1410" y="395" width="205" height="52" fill="#202020" rx="8"/>
+  <text x="1459" y="426" class="busText">Bus GND comune</text>
+
+  <path d="M445 352 H930 V310 H950" class="pos"/>
+  <path d="M1125 310 H1180" class="pos"/>
+  <path d="M1355 310 H1410" class="pos"/>
+  <path d="M445 378 H915 V478 H1450 V449" class="neg"/>
+
+  <rect x="950" y="395" width="210" height="75" class="powerComponent"/>
+  <text x="998" y="418" class="label">Buck 1: 12V-&gt;5V</text>
+  <text x="985" y="440" class="small">5A, fusibile 2A</text>
+  <text x="972" y="459" class="tiny">solo per il nodo ESP32</text>
+  <path d="M1513 345 V367 H1055 V395" class="pos"/>
+  <path d="M1160 432 H1410" class="neg"/>
+
+  <rect x="1680" y="275" width="150" height="70" class="powerComponent"/>
+  <text x="1705" y="299" class="label">Buck 2</text>
+  <text x="1692" y="319" class="small">solo JD-VCC rele</text>
+  <text x="1696" y="337" class="tiny">3A, fusibile 2A</text>
+  <path d="M1615 310 H1680" class="pos"/>
+  <path d="M1755 345 V520 H1557 V545" class="fivev"/>
+  <text x="1660" y="513" class="tiny">JD-VCC (comune a Rele 1/2/3)</text>
+
+  <!-- Rami pompa -->
+  <rect x="955" y="555" width="135" height="62" class="powerComponent"/>
+  <text x="994" y="581" class="label">Fus 3A</text>
+  <text x="995" y="604" class="tiny">ramo pompa 1</text>
+  <rect x="1200" y="545" width="160" height="82" class="powerComponent"/>
+  <text x="1248" y="578" class="label">Pompa 1</text>
+  <text x="1225" y="604" class="small">P1 - piante grandi</text>
+  <rect x="1470" y="545" width="185" height="82" class="powerComponent"/>
+  <text x="1519" y="578" class="label">Rele 1</text>
+  <text x="1492" y="604" class="tiny">GPIO18, active-low</text>
+
+  <rect x="955" y="685" width="135" height="62" class="powerComponent"/>
+  <text x="994" y="711" class="label">Fus 3A</text>
+  <text x="995" y="734" class="tiny">ramo pompa 2</text>
+  <rect x="1200" y="675" width="160" height="82" class="powerComponent"/>
+  <text x="1248" y="708" class="label">Pompa 2</text>
+  <text x="1222" y="734" class="small">P2 - aromatiche</text>
+  <rect x="1470" y="675" width="185" height="82" class="powerComponent"/>
+  <text x="1519" y="708" class="label">Rele 2</text>
+  <text x="1492" y="734" class="tiny">GPIO19, active-low</text>
+
+  <rect x="955" y="815" width="135" height="62" class="powerComponent"/>
+  <text x="994" y="841" class="label">Fus 3A</text>
+  <text x="995" y="864" class="tiny">ramo pompa 3</text>
+  <rect x="1200" y="805" width="160" height="82" class="powerComponent"/>
+  <text x="1248" y="838" class="label">Pompa 3</text>
+  <text x="1218" y="864" class="small">P3 - oleandri/ibisco</text>
+  <rect x="1470" y="805" width="185" height="82" class="powerComponent"/>
+  <text x="1519" y="838" class="label">Rele 3</text>
+  <text x="1492" y="864" class="tiny">GPIO23, active-low</text>
+
+  <path d="M1513 345 V515 H1022 V555" class="pos"/>
+  <path d="M1022 617 V645 H1557 V627" class="pos"/>
+  <path d="M1470 586 H1360" class="pos"/>
+  <path d="M1200 586 H1180 V447 H1410" class="neg"/>
+
+  <path d="M1548 345 V645 H1022 V685" class="pos"/>
+  <path d="M1022 747 V775 H1557 V757" class="pos"/>
+  <path d="M1470 716 H1360" class="pos"/>
+  <path d="M1200 716 H1180 V447 H1410" class="neg"/>
+
+  <path d="M1583 345 V775 H1022 V815" class="pos"/>
+  <path d="M1022 877 V900 H1557 V887" class="pos"/>
+  <path d="M1470 846 H1360" class="pos"/>
+  <path d="M1200 846 H1180 V447 H1410" class="neg"/>
+
+  <!-- BOX LOGICA -->
+  <rect x="60" y="480" width="800" height="480" class="logicBox"/>
+  <rect x="60" y="480" width="800" height="45" class="logicHeader"/>
+  <text x="84" y="510" class="section">BOX LOGICA IP65 - solo segnali, 5V e sensori</text>
+
+  <rect x="105" y="555" width="270" height="145" class="component"/>
+  <text x="124" y="587" class="label">ESP32-DevKitC-32UE</text>
+  <text x="124" y="611" class="small">modulo WROOM-32UE, 38 pin</text>
+  <text x="124" y="634" class="tiny">5V su VIN da Buck 1 - mai sul 3V3</text>
+  <text x="124" y="654" class="tiny">ESPHome, MQTT verso il Pi</text>
+  <text x="124" y="674" class="tiny">VCC opto rele dal 3V3 di questa scheda</text>
+  <text x="124" y="694" class="tiny">GPIO16 = RX VE.Direct</text>
+
+  <rect x="430" y="555" width="250" height="100" class="neutralComponent"/>
+  <text x="450" y="583" class="label">Ingresso VE.Direct</text>
+  <text x="450" y="605" class="tiny">solo TX + GND - mai il pin +5V</text>
+  <text x="450" y="625" class="tiny">TX 3.3V: filo diretto su GPIO16</text>
+  <text x="450" y="645" class="tiny">TX 5V: partitore 10k serie + 20k a GND</text>
+
+  <rect x="430" y="680" width="250" height="100" class="sensorComponent"/>
+  <text x="450" y="708" class="label">AO3401A (P-ch)</text>
+  <text x="450" y="730" class="tiny">high-side sul 3V3 dei sensori</text>
+  <text x="450" y="750" class="tiny">gate = GPIO22, logica invertita</text>
+  <text x="450" y="770" class="tiny">100k gate-source = OFF durante il boot</text>
+
+  <rect x="430" y="800" width="250" height="100" class="safetyComponent"/>
+  <text x="450" y="828" class="label">Pull-up 10k (opzionali)</text>
+  <text x="450" y="850" class="tiny">su IN1/IN2/IN3, lato scheda rele</text>
+  <text x="450" y="870" class="tiny">un filo staccato lascia l'ingresso alto</text>
+  <text x="450" y="890" class="tiny">verifica: prova diodi VCC-&gt;IN = ~1.1V</text>
+
+  <!-- Collegamenti nodo -->
+  <path d="M545 287 V555" class="vedirect"/>
+  <text x="556" y="466" class="tiny">VE.Direct 19200 8N1</text>
+  <path d="M950 432 H880 V672 H375" class="fivev"/>
+  <path d="M105 580 H85 V452 H640" class="coax"/>
+  <text x="150" y="444" class="tiny">pigtail IPEX-SMA corto</text>
+
+  <path d="M300 700 V915 H1790 V586 H1655" class="signal"/>
+  <path d="M330 700 V935 H1810 V716 H1655" class="signal"/>
+  <path d="M360 700 V955 H1830 V846 H1655" class="signal"/>
+  <path d="M240 700 V975 H1420 V449" class="gndRef"/>
+  <text x="965" y="505" class="warn">GND comune obbligatorio: riferimento dei segnali, non ritorno della corrente pompe</text>
+
+  <!-- Sensori -->
+  <rect x="60" y="1010" width="330" height="95" class="sensorComponent"/>
+  <text x="82" y="1040" class="label">Galleggianti x3</text>
+  <text x="82" y="1063" class="small">GPIO25 / 26 / 27</text>
+  <text x="82" y="1085" class="tiny">pull-up interno - aperto = vuoto (fail-safe)</text>
+  <path d="M150 700 V1010" class="signal"/>
+
+  <rect x="800" y="1010" width="350" height="95" class="sensorComponent"/>
+  <text x="822" y="1040" class="label">Umidita capacitivi x3</text>
+  <text x="822" y="1063" class="small">GPIO32 / 33 / 34 - solo ADC1</text>
+  <text x="822" y="1085" class="tiny">3V3 dal MOSFET, 1 s di assestamento prima di leggere</text>
+  <path d="M445 780 V1165 H975 V1107" class="sw3v3"/>
+
+  <rect x="1190" y="1000" width="280" height="190" class="neutralComponent"/>
+  <text x="1212" y="1030" class="label">Cavo tra box</text>
+  <text x="1212" y="1058" class="tiny">1 - GPIO18 Rele P1</text>
+  <text x="1212" y="1080" class="tiny">2 - GPIO19 Rele P2</text>
+  <text x="1212" y="1102" class="tiny">3 - GPIO23 Rele P3</text>
+  <text x="1212" y="1124" class="tiny">4 - GND segnale</text>
+  <text x="1212" y="1146" class="tiny">5 - VCC opto rele (3.3V)</text>
+  <text x="1212" y="1168" class="tiny">6 - scorta</text>
+
+  <rect x="1500" y="1000" width="390" height="190" class="safetyComponent"/>
+  <text x="1522" y="1030" class="label">Sicurezze locali del nodo</text>
+  <text x="1522" y="1058" class="tiny">interlock: mai due pompe insieme</text>
+  <text x="1522" y="1080" class="tiny">auto-off forzato a ~25 min per corsa</text>
+  <text x="1522" y="1102" class="tiny">deadman 30 s: niente keepalive = tutto OFF</text>
+  <text x="1522" y="1124" class="tiny">restore_mode ALWAYS_OFF al boot</text>
+  <text x="1522" y="1146" class="tiny">valgono anche con WiFi giu' o Pi spento</text>
+  <text x="1522" y="1168" class="tiny">worst case deadman = 100 mL (12 L/h x 30 s)</text>
+
+  <!-- Note -->
+  <rect x="60" y="1215" width="1830" height="100" fill="#fff7ed" stroke="#b56b1f" stroke-width="2" rx="10"/>
+  <text x="85" y="1243" class="warn">Note operative</text>
+  <text x="230" y="1243" class="small">1. Mai +12V sui pin dell'ESP32: i GPIO comandano solo gli IN del modulo rele (active-low). Diodo 1N5819 antiparallelo su ogni pompa, catodo al +.</text>
+  <text x="85" y="1267" class="small">2. VE.Direct: collegare SOLO TX e GND, mai il pin +5V. Misurare il livello del TX prima di cablare. Un partitore montato su una sorgente gia' a 3.3V la porta a 2.2V, sotto la soglia VIH dell'ESP32 (2.475V): la seriale non aggancia.</text>
+  <text x="85" y="1291" class="small">3. VCC lato optoisolatore dal 3V3 della devkit, JD-VCC dal Buck 2, jumper rimosso. Testare i buck sotto carico prima di collegare il nodo: su questo impianto un buck non verificato ha gia' distrutto un Pi Zero 2 W.</text>
+</svg>
