@@ -9,6 +9,12 @@ tre ingressi reali — **galleggianti nei serbatoi, sensori di umidità del terr
 più un quarto emerso in corso d'opera: **stato batteria/pannello via VE.Direct**.
 Il tutto con un vincolo esplicito: sostenibilità economica (~70–80 € totali).
 
+> ⚠ **Aggiornamento 2026-07-26 — le scelte hardware della Fase 6 sono superate.** Il Pi 4
+> passa a cervello di domotica e in campo va un nodo ESP32: niente ADS1115, niente cavo
+> VE.Direct-USB, niente pulsante di shutdown. Vedi
+> [architettura-nodo-esp32.md](architettura-nodo-esp32.md). **Il ragionamento agronomico e
+> il software di Fase 5 di questo documento restano validi tali e quali.**
+
 ---
 
 ## 1. Il problema dell'umidità: perché NON inseguire i valori "scientifici"

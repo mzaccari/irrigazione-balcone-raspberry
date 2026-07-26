@@ -1,8 +1,8 @@
 # Stato deploy — irrigatore (handoff tra dispositivi)
 
 > File di riferimento per riprendere il lavoro da un altro PC. Aggiornato al 2026-07-10.
-> Leggi anche [checklist-accensione.md](checklist-accensione.md), [upgrade-sensori.md](upgrade-sensori.md)
-> e [../software/README.md](../software/README.md).
+> Leggi anche [checklist-accensione.md](checklist-accensione.md), [upgrade-sensori.md](upgrade-sensori.md),
+> [architettura-nodo-esp32.md](architettura-nodo-esp32.md) e [../software/README.md](../software/README.md).
 
 ## In una riga
 
