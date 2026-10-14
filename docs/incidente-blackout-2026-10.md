@@ -77,7 +77,10 @@ a **0 byte**. Senza un profilo Wi-Fi:
   restano invariate.
 - **Batteria**: lasciata caricare dal pannello, poi scollegata (prima il pannello, poi la
   batteria) e messa in casa. Una LiFePO4 non va caricata sotto 0 °C.
-- **Cablaggio GPIO** staccato. La foto è sul NucBox, `irrigatore-logs\20261014-sd\cablaggio-gpio.jpg`.
+- **Cablaggio GPIO** staccato, foto qui sotto. Nella foto l'estremità del pin 1 è a destra, vicino
+  al distanziale.
+
+![Cablaggio GPIO verso la scheda relè, 14/10/2026](img/cablaggio-gpio-20261014.jpg)
 
 | filo | pin | segnale | verso |
 |---|---|---|---|
