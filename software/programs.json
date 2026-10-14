@@ -40,36 +40,27 @@
   "pumps": {
     "pompa_1": {
       "tank_liters": 30.0,
-      "flow_lph": 10.0,
+      "flow_lph": 15.0,
       "programs": [
         {
-          "id": "estate",
-          "start_date": "2026-07-07",
-          "duration_s": 480,
-          "times": [
-            "06:30",
-            "20:00"
-          ]
-        },
-        {
-          "id": "a73777a1",
-          "enabled": true,
-          "start_date": "2026-07-16",
+          "id": "4bd5aad7",
+          "enabled": false,
+          "start_date": "2026-08-10",
           "end_date": null,
           "times": [
-            "20:40"
+            "08:00"
           ],
-          "duration_s": 180
+          "duration_s": 120
         },
         {
-          "id": "canicola",
+          "id": "0c2b6acb",
           "enabled": true,
-          "start_date": "2026-08-01",
-          "end_date": "2026-08-04",
+          "start_date": "2026-09-14",
+          "end_date": null,
           "times": [
-            "04:30"
+            "23:00"
           ],
-          "duration_s": 180
+          "duration_s": 600
         }
       ],
       "sensors": {
@@ -81,23 +72,14 @@
       "flow_lph": 12.0,
       "programs": [
         {
-          "id": "estate",
-          "start_date": "2026-07-07",
-          "duration_s": 360,
-          "times": [
-            "06:45",
-            "20:15"
-          ]
-        },
-        {
-          "id": "canicola",
+          "id": "5886fefd",
           "enabled": true,
-          "start_date": "2026-08-01",
-          "end_date": "2026-08-04",
+          "start_date": "2026-09-16",
+          "end_date": null,
           "times": [
-            "05:00"
+            "22:30"
           ],
-          "duration_s": 120
+          "duration_s": 300
         }
       ],
       "sensors": {
@@ -109,34 +91,24 @@
       "flow_lph": 10.0,
       "programs": [
         {
-          "id": "08bd6b1d",
-          "enabled": true,
-          "start_date": "2026-07-20",
+          "id": "9670b293",
+          "enabled": false,
+          "start_date": "2026-09-21",
           "end_date": null,
           "times": [
-            "21:20"
+            "06:00"
           ],
-          "duration_s": 420
+          "duration_s": 360
         },
         {
-          "id": "mattina",
+          "id": "07016143",
           "enabled": true,
-          "start_date": "2026-07-27",
+          "start_date": "2026-09-26",
           "end_date": null,
           "times": [
-            "07:00"
+            "22:00"
           ],
-          "duration_s": 300
-        },
-        {
-          "id": "canicola",
-          "enabled": true,
-          "start_date": "2026-08-01",
-          "end_date": "2026-08-04",
-          "times": [
-            "04:45"
-          ],
-          "duration_s": 180
+          "duration_s": 500
         }
       ],
       "sensors": {

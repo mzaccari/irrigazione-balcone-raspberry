@@ -3,6 +3,10 @@
 > File di riferimento per riprendere il lavoro da un altro PC. Aggiornato al 2026-07-10.
 > Leggi anche [checklist-accensione.md](checklist-accensione.md), [upgrade-sensori.md](upgrade-sensori.md),
 > [architettura-nodo-esp32.md](architettura-nodo-esp32.md) e [../software/README.md](../software/README.md).
+>
+> **Al 2026-10-14 l'impianto è fermo per l'inverno**: Pi spento e in casa, `irrigatore-daemon`
+> disabilitato, cablaggio relè staccato, batteria scollegata. Ripartenza prevista dal 10/04/2027.
+> Cosa è successo e checklist di ripartenza: [incidente-blackout-2026-10.md](incidente-blackout-2026-10.md).
 
 ## In una riga
 
@@ -34,7 +38,7 @@ Controller irrigazione a 3 pompe 12 V su **Raspberry Pi 4**, modulo relè 8 cana
 
 | Servizio | Fa | Note |
 |---|---|---|
-| `irrigatore-daemon.service` | demone pompe, unico owner GPIO | `PUMP_MOCK=0`, `GPIOZERO_PIN_FACTORY=lgpio` |
+| `irrigatore-daemon.service` | demone pompe, unico owner GPIO | `PUMP_MOCK=0`, `GPIOZERO_PIN_FACTORY=lgpio`. **Disabilitato dal 14/10/2026** (fermo invernale): `sudo systemctl enable --now irrigatore-daemon` |
 | `irrigatore-web.service` | UI Streamlit | su `0.0.0.0:8501`, dopo il demone |
 
 Interfaccia web: **http://192.168.178.39:8501**
